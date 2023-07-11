@@ -46,6 +46,6 @@ class Sequence(models.Model):
     movement4 = models.ForeignKey(
         Movement, null=True, on_delete=models.CASCADE, related_name="sequence4"
     )
-    movement6 = models.ForeignKey(
+    movement5 = models.ForeignKey(
         Movement, null=True, on_delete=models.CASCADE, related_name="sequence5"
     )
