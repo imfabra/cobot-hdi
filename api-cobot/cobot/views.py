@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from cobot.serializer import PointSerializer, MovementSerializer, SequenceSerializer
 from cobot.models import Point, Movement, Sequence
 from cobot.querysets import QuerySets
+from cobot.cobot import Cobot
+
+my_cobot = Cobot()
 
 
 def Hello(request):
@@ -41,7 +44,9 @@ class PostCommandsView(APIView):
                     serializer = PointSerializer(queryset)
                     qt = QuerySets()
                     data = qt.get_point_angles(name)
-                    print("Ejecutar robot con data:", data)
+
+                    my_cobot.run_command(command, data_type, data)
+
                     return Response(serializer.data)
                 else:
                     return Response({"error": "Point not found."})
@@ -50,7 +55,9 @@ class PostCommandsView(APIView):
                 if queryset:
                     qt = QuerySets()
                     data = qt.get_movement_data(name)
-                    print("Ejecutar robot con data:", data)
+
+                    my_cobot.run_command(command, data_type, data)
+
                     return Response(data)
                 else:
                     return Response({"error": "Movement not found."})
@@ -59,7 +66,9 @@ class PostCommandsView(APIView):
                 if queryset:
                     qt = QuerySets()
                     data = qt.get_sequence_data(name)
-                    print("Ejecutar robot con data:", data)
+
+                    my_cobot.run_command(command, data_type, data)
+
                     return Response(data)
                 else:
                     return Response({"error": "Sequence not found."})
