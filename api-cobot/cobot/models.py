@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 
 
 class Point(models.Model):
@@ -46,6 +44,6 @@ class Sequence(models.Model):
     movement4 = models.ForeignKey(
         Movement, null=True, on_delete=models.CASCADE, related_name="sequence4"
     )
-    movement6 = models.ForeignKey(
+    movement5 = models.ForeignKey(
         Movement, null=True, on_delete=models.CASCADE, related_name="sequence5"
     )
