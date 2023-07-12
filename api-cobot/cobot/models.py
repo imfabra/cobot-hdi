@@ -11,7 +11,7 @@ class Point(models.Model):
 
 
 class Movement(models.Model):
-    name = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=30, primary_key=True)
     point1 = models.ForeignKey(
         Point, null=True, on_delete=models.CASCADE, related_name="movements_point1"
     )
@@ -31,7 +31,7 @@ class Movement(models.Model):
 
 
 class Sequence(models.Model):
-    name = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=30, primary_key=True)
     movement1 = models.ForeignKey(
         Movement, null=True, on_delete=models.CASCADE, related_name="sequence1"
     )

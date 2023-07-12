@@ -37,18 +37,13 @@ def cobot_points(command, type, data):
 @app.task
 def cobot_sequences(command, type, data):
     pointsList = []
-    print("----------------------------------------")
-    print("Command: " + command + "\nType: " + str(type), "\n" + str(data))
+    print("-------------- Sequences ---------------")
+    print("Command: " + str(command))
+    print("Type: " + str(type))
+    print("Data: " + str(data))
     print("----------------------------------------")
     for i in data[1]:
-        vacio = True if len(i) == 0 else False
-        if vacio == False:
-            print("----------------------------------------")
-            print("Name: ", i[0], "\n" + "Gripper: ", i[1])
-            print("--------------- Puntos -----------------")
-            for x in i[2]:
-                print(x)
-                if len(x) != 0:
-                    pointsList.append(x)
-            print("----------------------------------------\n")
+        if len(i) != 0:
+            # print(i)
+            cobot_movements(command, type, (i))
     print(pointsList)
