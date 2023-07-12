@@ -11,8 +11,8 @@ from time import sleep
 import concurrent.futures
 import importlib.util
 import concurrent.futures
-from cinematica.kine import Kine 
-from Interprete.decoder import deco
+from .cinematica.kine import Kine 
+from .Interprete.decoder import deco
 import RPi.GPIO as GPIO 
 
 
@@ -225,6 +225,9 @@ class RMDX:
     
     def send_motion(self,angulos,speeds):
         #Tareas en paralelo
+        angulos[0]=angulos[0]*-1
+        angulos[3]=angulos[3]*-1
+        angulos[4]=angulos[4]*-1
         with concurrent.futures.ThreadPoolExecutor() as executor:
             movimiento = [] 
             for motor, angulo,speed in zip(self.motor_list,angulos,speeds):
@@ -304,6 +307,12 @@ class RMDX:
                 action.append(task)
             
             concurrent.futures.wait(action)
+    
+    def motors_on(self):
+        self.send_motion(self.get_angle_value(),[40,40,40,40,40])
+        
+        
+        
     
     def send_action_reset_motors(self, motors):
         with concurrent.futures.ThreadPoolExecutor() as executor:
