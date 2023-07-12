@@ -3,3 +3,4 @@ Django==4.2.3
 celery==5.3.1
 djangorestframework==3.14.0
 redis==4.6.0
+bleak==0.20.2
