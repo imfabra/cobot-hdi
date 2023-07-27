@@ -1,0 +1,24 @@
+ir a zero inicio del robot
+{
+  "command":"play",
+  "type":"home",
+  "name":"null"
+}
+
+{
+  "command":"play",
+  "type":"point",
+  "name":"P0"
+}
+
+{
+  "command":"play",
+  "type":"point",
+  "name":"P1"
+}
+
+{
+  "command":"play",
+  "type":"point",
+  "name":"P2"
+}

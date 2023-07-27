@@ -82,7 +82,7 @@ class RMDX:
         try:
             os.system('sudo /sbin/ip link set can0 down')
             time.sleep(0.5)
-            os.system('sudo /sbin/ip link set can0 up type can bitrate 1000000 restart-ms 100')
+            os.system('sudo /sbin/ip link set can0 up type can bitrate 1000000 ')#restart-ms 100
             # os.system('sudo ifconfig can0 up')
             time.sleep(0.1)
         except Exception as e:

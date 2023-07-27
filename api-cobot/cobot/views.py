@@ -72,6 +72,10 @@ class PostCommandsView(APIView):
                     return Response(data)
                 else:
                     return Response({"error": "Sequence not found."})
+            elif data_type=="home":
+                my_cobot.run_command(command, data_type)
+                # print("going to zero")
+                return Response({"Ok": "Going to Zero."})
             else:
                 return Response({"error": "Invalid data type."})
         else:
