@@ -14,6 +14,9 @@ import concurrent.futures
 from .cinematica.kine import Kine 
 from .Interprete.decoder import deco
 import RPi.GPIO as GPIO 
+import serial
+import threading
+from tqdm import tqdm
 
 
 
@@ -43,6 +46,10 @@ def getValueConfig(header, param):
 class RMDX:
 
     def __init__(self):
+        self.thread = None
+        self.sensor_trama = [False, False, False, False, False, False]
+        self.run_read_arduino = True
+
         self.bus = None
         self.header = 'codeTypeActionHex'
         self.motor_configs_header = 'MotorConfigs'
@@ -243,7 +250,7 @@ class RMDX:
         res = self.setSpeedClosedLoop(motor_id,data_send)
 
     def send_rotational_motion(self,speeds):
-        # print("sending rotational motion ..")
+        print("sending rotational motion ..")
         #listas
         #Tareas en paralelo
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -255,40 +262,23 @@ class RMDX:
             #esperar a quee todas las tareas se completen
             concurrent.futures.wait(movimiento)
     
-    def control_stop_motor(self, sensors, states):
+    #def control_stop_motor(self, sensors, states):
 
-        zero_speed = [80.0,-20.0,32.0,-40.0,0.0]
+        # zero_speed = [-80.0,-40.0,-32.0,-20.0,0.0]
         # send_rotational_motion(motor_list,zero_speed)
 
-        if (sensors[0] == 1 or sensors[1]  == 1) and states[0] == False:  
-            self.general_comand(self.motor_list[0],6)
-            states[0] = True
-        elif (states[0] == True) and (sensors[0] != 1 and sensors[1]  != 1):
-            states[0] = False
-            self.send_speed(self.motor_list[0],zero_speed[0])
-
-
-        if (sensors[2] == 1 or sensors[3] == 1) and states[1] == False: 
-            self.general_comand(self.motor_list[1],6)
-            states[1] = True
-        elif (states[1] == True) and (sensors[2] != 1 and sensors[1]  != 1):
-            states[1] = False
-            self.send_speed(self.motor_list[1],zero_speed[1])
-
-
-        if (sensors[4] == 1 or sensors[5] == 1) and states[2] == False: 
-            self.general_comand(self.motor_list[2],6)
-            states[2] = True
-        elif (states[2] == True) and (sensors[4] != 1 and sensors[5]  != 1):
-            states[2] = False
-            self.send_speed(self.motor_list[2],zero_speed[2])
-
-
-        if (sensors[6] == 1 and states[3] == False): 
-            self.general_comand(self.motor_list[3],6)
-            states[3] = True
-        elif(sensors[6] == 0):
-            states[3] = False
+        # if (sensors[0] == True ) and states[0] == False:  
+        #     self.general_comand(self.motor_list[0],6)
+        #     states[0] = True
+        # elif (states[0] == True) and (sensors[0] != True):
+        #     states[0] = False
+        #     self.send_speed(self.motor_list[0],zero_speed[0])
+        
+        
+            # states[3] = True
+        #elif(sensors[3] == False):
+        #    states[3] = False
+            
 
     
     def send_action_set_zero_motors(self,motors):
@@ -327,8 +317,11 @@ class RMDX:
     
     def control_set_zero_mode(self):
         self.send_action_set_zero_motors(self.motor_list)
+        sleep(0.1)
         self.send_action_reset_motors(self.motor_list)
+        sleep(0.1)
         self.send_action_set_zero_motors(self.motor_list)
+        sleep(0.1)
         self.send_action_reset_motors(self.motor_list)
         self.setup()
         self.set=1
@@ -349,77 +342,92 @@ class RMDX:
         #Leer respuesta de encoder
         res_list = list()
         res_list = self.decoi.readResponseDataPos(res.data)
+    
+    def read_to_arduino(self):
+        try:
+            self.ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=None)
+            sensor_tramax = [False, False, False, False, False, False]
+            while self.run_read_arduino:
+                # ----- Abrir conexion serial con arduino ----
+                data = self.ser.readline().decode().strip()
+                aux = [True if c == "1" else False for c in data]
+                if len(aux) != 0:
+                    sensor_tramax = aux
+                self.sensor_trama = sensor_tramax
+                #print(self.sensor_trama)
+                sleep(0.001)
+        except:
+            print("Stop arduino")
 
     def going_to_zero(self):
-        # --------------- Raspberry configs --------------------
-        # define pines here
-        GPIO.setwarnings(False) 
-        GPIO.setmode(GPIO.BCM) 
-        #Definicion sensores Numero de GPIO
-        button_on_of = 15
-        f_1 = 17
-        f_2 = 7
-        f_3 = 21
-        f_4 = 20
-        f_5 = 19
-        f_6 = 13
-        f_7 = 12
-
-        #Seteo de pines
-        GPIO.setup(button_on_of, GPIO.IN)
-        GPIO.setup(f_1, GPIO.IN)
-        GPIO.setup(f_2, GPIO.IN) 
-        GPIO.setup(f_3, GPIO.IN) 
-        GPIO.setup(f_4, GPIO.IN)    
-        GPIO.setup(f_5, GPIO.IN)
-        GPIO.setup(f_6, GPIO.IN)
-        GPIO.setup(f_7, GPIO.IN) 
-        # enable set zero rutine
-        enable = True
-
+        set_motors = True
+        rev_set_motors = True
         #speed for set zero rutine
-        zero_speed = [80.0,-20.0,32.0,-20.0,0.0] #velocidad minima motor 3 = 30
-        #   zero_speed = [0.0,0.0,0.0,0.0,0.0] #velocidad minima motor 3 = 30
-        angulos_zero_kine =[-118.0,110.0,-159.0,22.5,0]
+        zero_speed = [-80.0,-40.0,-32.0,-30.0,0.0] #velocidad minima motor 3 = 30
+        #zero_speed = [0.0,0.0,0.0,-20.0,0.0] #velocidad minima motor 3 = 30
+        angulos_zero_kine =[164.0,93,158.47,22.0,0]
         speed_kine=[80.0,120.0,40.0,40.0,40.0]
+
+        # Inicia un hilo para ejecutar el metodo de lectura de pines arduino
         print("going zero")
-        #   zero_speed = [15.0]
+        self.thread = threading.Thread(target=self.read_to_arduino)
+        self.thread.start()
+        for i in tqdm(range(3), desc="1. Estabilizandolectura Arduino ", unit="Sec"):
+            sleep(1)
+        sensor_trama = self.sensor_trama
+        print("2. Trama sensores: ", sensor_trama)
 
-        self.send_rotational_motion(zero_speed)
+        for x in tqdm(range(4), desc="3. Set inicial motores", unit="Sec"):
+            if (sensor_trama[x] == True): 
+                self.general_comand(self.motor_list[x],6)
+                zero_speed[x] = 0.0
+            else:
+                set_motors = False
+            sleep(1)
 
-        #estados iniciales de stop
-        state_m0 = False
-        state_m1 = False
-        state_m2 = False
-        state_m3 = False
-        states = [state_m0,state_m1,state_m2,state_m3]
-
-        while enable:
-                # step 1: if sensors equal 1 them set zero motors and reset motors
-                # sensor trama
-                sensor_trama = [GPIO.input(f_1),GPIO.input(f_2),GPIO.input(f_3),
-                                GPIO.input(f_4),GPIO.input(f_5),GPIO.input(f_6),GPIO.input(f_7)]
+        if (set_motors):
+            print("Stop Cero... Estabilizado")
+            sleep(2) 
+        else:
+            print("Ciclo")
+            self.send_rotational_motion(zero_speed)
+            print(zero_speed)
+            while not set_motors:
+                sensor_trama = self.sensor_trama
+                set_motors = True
+                rev_set_motors = True
                 
-
-                if sensor_trama == [0,1,0,1,1,0,1]:
-                    enable = False
-                    break;
-                else:
-                    # print("********SEARCHING ZERO MODE*****")
-                    # print("lectura: ",sensor_trama)
-                    # sensor_trama_anterior=sensor_trama
-
-                    self.control_stop_motor(sensor_trama,states)
-                    enable = True
-                # step 3: stop motor when associated sensor A equal 1 or sensor B equal 1
-                sleep(0.2)
+                for x in tqdm(range(4), desc="4. Set home motores", unit="Sec"):
+                    if (sensor_trama[x] == True): 
+                        self.general_comand(self.motor_list[x],6)
+                    else: 
+                        rev_set_motors = False
+                
+                if rev_set_motors != set_motors:
+                    set_motors = False
+                
+                #sleep(0.001)
         
+        print("Iniciando SET ZERO HOME")
+        print("Entre zero mode")
         self.control_set_zero_mode()
+        print("Sali zero mode")
+        print("Entre zero kine")
         self.send_motion_to_zero_kine(angulos_zero_kine,speed_kine)
-        sleep(5)
+        print("Sali zero mode")
+        
+        for x in tqdm(range(5), desc="# Preparando home Set", unit="Sec"):
+            sleep(1)
+
         self.control_set_zero_mode()
         angulos_zero = [0.1,0.1,0.0,0.0,0.0]
         self.send_motion(angulos_zero,speed_kine) 
+
+        self.run_read_arduino = False
+        sleep(1)
+        self.thread.join()
+
+
         print("Finish set zero")
 
     def get_angle_value(self,resp=0):

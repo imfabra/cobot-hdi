@@ -8,9 +8,10 @@ service_uuid = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
 characteristic_uuid = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
 
 class BT:
-    def __init__(self) -> None:
-        pass
+    def __init__(self):
+        self.data=""
     async def send_data(self,data=""):
+        self.data=data
         async with BleakClient(esp32_address) as client:     
             # Enviar los datos al dispositivo ESP32
             await client.write_gatt_char(characteristic_uuid, data.encode())
