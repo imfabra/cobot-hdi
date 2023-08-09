@@ -1,9 +1,14 @@
 from api_cobot.celery import app
 from .modules.motors.rmdx_funtions import RMDX 
+from .modules.bluetooth.Bluetooth import BT
 from time import sleep
+import json
+
 motors=RMDX()
 motors.setup()
 motors.getMotorList()
+
+bt=BT()
 
 @app.task
 def cobot_home_reset():
@@ -26,10 +31,14 @@ def cobot_movements(command, type, data):
             status_list = True
             # Aqui ejecutar movimiento robot (Retardar movimiento) -> i[1]
             motors.send_motion(i[1],[40,40,40,40,40])
-            sleep(2)
+            sleep(1)
             print(i)
     if status_list == False:
         # Aqui llamar metodo gripper-> comando: data[1]
+        if(data[1] == True):
+            bt.run("C")
+        elif(data[1] == False):
+            bt.run("A")
         print("Ejecutar Gripper A: ", data[1])
     print("----------------------------------------")
 
@@ -58,3 +67,21 @@ def cobot_sequences(command, type, data):
             # print(i)
             cobot_movements(command, type, (i))
     print(pointsList)
+
+
+@app.task
+def cobot_angles():
+    anglesX = json.dumps(motors.get_angle_value(1))
+    return anglesX
+
+@app.task
+def motors_off():
+    print("Entre a tasks ejecutar")
+    motors.motors_off()
+
+@app.task
+def motors_on():
+    motors.motors_on()
+    anglesOn = json.dumps(motors.get_angle_value(1))
+    return anglesOn
+

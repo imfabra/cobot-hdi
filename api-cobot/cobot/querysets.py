@@ -50,27 +50,32 @@ class QuerySets:
     def get_sequence_data(self, name):
         queryset = Sequence.objects.filter(name=name).first()
         if queryset:
+            movements = [getattr(queryset, f'movement{i}') for i in range(1, 26)]
             data = [
                 queryset.name,
-                # queryset.gripper,
-                [
-                    self.get_movement_data(queryset.movement1.name)
-                    if queryset.movement1
-                    else [],
-                    self.get_movement_data(queryset.movement2.name)
-                    if queryset.movement2
-                    else [],
-                    self.get_movement_data(queryset.movement3.name)
-                    if queryset.movement3
-                    else [],
-                    self.get_movement_data(queryset.movement4.name)
-                    if queryset.movement4
-                    else [],
-                    self.get_movement_data(queryset.movement5.name)
-                    if queryset.movement5
-                    else [],
-                ],
+                [self.get_movement_data(movement.name) if movement else [] for movement in movements],
             ]
             return data
+                
+      #          queryset.name,
+                # queryset.gripper,
+      #          [
+       #             self.get_movement_data(queryset.movement1.name)
+       #             if queryset.movement1
+       #             else [],
+       #             self.get_movement_data(queryset.movement2.name)
+       #             if queryset.movement2
+       #             else [],
+       #             self.get_movement_data(queryset.movement3.name)
+       #             if queryset.movement3
+       #             else [],
+       #             self.get_movement_data(queryset.movement4.name)
+       #             if queryset.movement4
+       #             else [],
+       #             self.get_movement_data(queryset.movement5.name)
+       #             if queryset.movement5
+       #             else [],
+       #         ],
+       #     ]
         else:
             return []

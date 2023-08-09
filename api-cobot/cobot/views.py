@@ -72,10 +72,24 @@ class PostCommandsView(APIView):
                     return Response(data)
                 else:
                     return Response({"error": "Sequence not found."})
-            elif data_type=="home":
+            else:
+                return Response({"error": "Invalid data type."})
+            
+        elif command == "cli":
+            if data_type=="home":
                 my_cobot.run_command(command, data_type)
                 # print("going to zero")
                 return Response({"Ok": "Going to Zero."})
+            elif data_type=="angles":
+                x = my_cobot.run_command(command, data_type)
+                return Response({"Angles":x.replace("\"", "")})
+            elif data_type=="motors_off":
+                my_cobot.run_command(command, data_type)
+                return Response({"state_motors":"Off"})
+            elif data_type=="motors_on":
+                x = my_cobot.run_command(command, data_type)
+                print("En view data: ", x)
+                return Response({"state_motors": "on", "data":x.replace("\"", "")})
             else:
                 return Response({"error": "Invalid data type."})
         else:

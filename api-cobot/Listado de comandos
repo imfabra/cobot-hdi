@@ -7,6 +7,12 @@ ir a zero inicio del robot
 
 {
   "command":"play",
+  "type":"angles",
+  "name":"null"
+}
+
+{
+  "command":"play",
   "type":"point",
   "name":"P0"
 }

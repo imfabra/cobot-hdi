@@ -114,11 +114,6 @@ class RMDX:
 
     def sendToMotor(self, motor_id, data_command,init_again=0):
         # ----------------- send data to motor ---------------------
-        if(self.set==0):
-            os.system('sudo /sbin/ip link set can0 down')
-            self.bus.flush_tx_buffer()
-            self.bus.shutdown()
-            self.setup()
         can_id = motor_id
         data = data_command
         msg = can.Message(arbitration_id=can_id, data=data, is_extended_id=False)
@@ -130,35 +125,28 @@ class RMDX:
             # print("MENSAJE ENVIADO: " + str(msg.data))
             # print("\n")
             
-            if(init_again==0):
-            # ------------------ read message ----------------------
-                receive_message = self.bus.recv(12.0)
-                if receive_message is None:
-                    print('Timeout occurred, no message.')
-                    os.system('sudo /sbin/ip link set can0 down')
-                    self.bus.flush_tx_buffer()
-                    self.bus.shutdown()
-                    self.set=0
-            else:
-                receive_message=None
-                
-
+        # ------------------ read message ----------------------
+            receive_message = self.bus.recv(1.0)
+            if receive_message is None:
+                # print('Timeout occurred, no message.')
+                receive_message="vacio"
+                # os.system('sudo /sbin/ip link set can0 down')
+                self.bus.flush_tx_buffer()
+                # self.bus.shutdown()
+                # self.set=0
+            
             # os.system('sudo /sbin/ip link set can0 down')
             # print("MENSAJE RECIVIDO : " + str(receive_message.data))
             # print("\n")
             self.bus.flush_tx_buffer()
-            if(init_again==1):
-                os.system('sudo /sbin/ip link set can0 down')
-                self.bus.shutdown()
-                self.set=0
             return receive_message
         except Exception as e:
             print("Fallo por el bus: ",e)
         finally:
             self.bus.flush_tx_buffer()
-            if(init_again==1):
+            if(self.set==0):
                 self.bus.shutdown()
-                self.set=0
+                self.setup()
 
     # ------ main commands ------------------
     def general_comand(self, motor_id,index_parameter):
@@ -167,10 +155,10 @@ class RMDX:
         command = getValueConfig(self.header, param)
         message = [command, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
         if (index_parameter==10):
-            set_again=1
+            self.set=0
         else:
-            set_again=0
-        return self.sendToMotor(motor_id, message,set_again)
+            self.set=1
+        return self.sendToMotor(motor_id, message)
 
     # ----- current(torque) -----------------
     def setTorqueClosedLoop(self, motor_id, data):
@@ -240,6 +228,7 @@ class RMDX:
             for motor, angulo,speed in zip(self.motor_list,angulos,speeds):
                 task = executor.submit(self.send_pos_with_speed,motor,angulo,speed)
                 movimiento.append(task)
+                sleep(0.01)
             
             #esperar a quee todas las tareas se completen
             concurrent.futures.wait(movimiento)
@@ -248,6 +237,7 @@ class RMDX:
         value = float(speed)  
         data_send = self.decoi.getDataSpeed(value)
         res = self.setSpeedClosedLoop(motor_id,data_send)
+        sleep(0.01)
 
     def send_rotational_motion(self,speeds):
         print("sending rotational motion ..")
@@ -258,6 +248,7 @@ class RMDX:
             for motor,speed in zip(self.motor_list,speeds):
                 task = executor.submit(self.send_speed,motor,speed)
                 movimiento.append(task)
+                sleep(0.01)
             
             #esperar a quee todas las tareas se completen
             concurrent.futures.wait(movimiento)
@@ -287,6 +278,7 @@ class RMDX:
             for motor in motors:
                 task = executor.submit(self.general_comand(motor,1))
                 action.append(task)
+                sleep(0.01)
             
             concurrent.futures.wait(action)
     def motors_off(self):
@@ -295,11 +287,13 @@ class RMDX:
             for motor in self.motor_list:
                 task = executor.submit(self.general_comand(motor,8))
                 action.append(task)
+                sleep(0.01)
             
             concurrent.futures.wait(action)
     
     def motors_on(self):
         self.send_motion(self.get_angle_value(),[40,40,40,40,40])
+        
         
         
         
@@ -310,6 +304,7 @@ class RMDX:
             for motor in motors:
                 task = executor.submit(self.general_comand(motor,10))
                 action.append(task)
+                sleep(0.01)
                 
             
             #esperar a quee todas las tareas se completen
@@ -332,6 +327,7 @@ class RMDX:
             for motor, angulo,speed in zip(self.motor_list,angulos,speeds):
                 task = executor.submit(self.send_pos_with_speed,motor,angulo,speed)
                 movimiento.append(task)
+                sleep(0.01)
             
             #esperar a quee todas las tareas se completen
             concurrent.futures.wait(movimiento)

@@ -19,8 +19,6 @@ import threading
 from tqdm import tqdm
 
 
-
-
 # ------ utils --------------------------
 def getDataHex(data):
 
@@ -33,7 +31,6 @@ def getDataHex(data):
     else:
         return int(data, 16)
 
-
 def getValueConfig(header, param):
     path = Path(__file__)
     ROOT_DIR = path.parent.absolute()
@@ -44,7 +41,6 @@ def getValueConfig(header, param):
 
 
 class RMDX:
-
     def __init__(self):
         self.thread = None
         self.sensor_trama = [False, False, False, False, False, False]
@@ -82,8 +78,23 @@ class RMDX:
                         'motor.status',
                         'motor.reset.system']
         # self.auto = self.getValueConfig(self.header,'util.null')
-        
+    
+    def getMotorList(self):
 
+        motor_0 = getValueConfig(self.motor_configs_header,'motor0.identfy')
+        motor_1 = getValueConfig(self.motor_configs_header,'motor1.identfy')
+        motor_2 = getValueConfig(self.motor_configs_header,'motor2.identfy')
+        motor_3 = getValueConfig(self.motor_configs_header,'motor3.identfy')
+        motor_4 = getValueConfig(self.motor_configs_header,'motor4.identfy')
+
+        self.motor_list.append(motor_0)
+        self.motor_list.append(motor_1)
+        self.motor_list.append(motor_2)
+        self.motor_list.append(motor_3)
+        self.motor_list.append(motor_4)
+
+        return self.motor_list
+        
     def setup(self):
         # ----------------- setup can ------------------------------
         try:
@@ -93,7 +104,7 @@ class RMDX:
             # os.system('sudo ifconfig can0 up')
             time.sleep(0.1)
         except Exception as e:
-            print("Exception:")
+            print("Exception try 1 setup:")
             print(e)
 
         try:
@@ -103,51 +114,13 @@ class RMDX:
             print('err: PiCAN board was not found')
             exit()
         except Exception as e:
-            print("Exception:")
+            print("Exception try 2 setup:")
             print(e)
 
         self.bus = bus
         self.set=1
         return self.bus
-
-    # -------- sends command -------------------------
-
-    def sendToMotor(self, motor_id, data_command,init_again=0):
-        # ----------------- send data to motor ---------------------
-        can_id = motor_id
-        data = data_command
-        msg = can.Message(arbitration_id=can_id, data=data, is_extended_id=False)
-
-        try: 
-            # send message
-            self.bus.send(msg)
-            time.sleep(0.1)
-            # print("MENSAJE ENVIADO: " + str(msg.data))
-            # print("\n")
-            
-        # ------------------ read message ----------------------
-            receive_message = self.bus.recv(1.0)
-            if receive_message is None:
-                # print('Timeout occurred, no message.')
-                receive_message="vacio"
-                # os.system('sudo /sbin/ip link set can0 down')
-                self.bus.flush_tx_buffer()
-                # self.bus.shutdown()
-                # self.set=0
-            
-            # os.system('sudo /sbin/ip link set can0 down')
-            # print("MENSAJE RECIVIDO : " + str(receive_message.data))
-            # print("\n")
-            self.bus.flush_tx_buffer()
-            return receive_message
-        except Exception as e:
-            print("Fallo por el bus: ",e)
-        finally:
-            self.bus.flush_tx_buffer()
-            if(self.set==0):
-                self.bus.shutdown()
-                self.setup()
-
+    
     # ------ main commands ------------------
     def general_comand(self, motor_id,index_parameter):
         param = self.parameter[index_parameter]
@@ -202,21 +175,37 @@ class RMDX:
         message = [command, 0x00, 0x00, 0x00,data[0],data[1],data[2],data[3]]
         return self.sendToMotor(motor_id, message)
 
-    def getMotorList(self):
+    def sendToMotor(self, motor_id, data_command):
+        # ----------------- send data to motor ---------------------
+        can_id = motor_id
+        data = data_command
+        print("id: ", can_id," data: ", data," inicializado: ", self.set)
+        msg = can.Message(arbitration_id=can_id, data=data, is_extended_id=False)
 
-        motor_0 = getValueConfig(self.motor_configs_header,'motor0.identfy')
-        motor_1 = getValueConfig(self.motor_configs_header,'motor1.identfy')
-        motor_2 = getValueConfig(self.motor_configs_header,'motor2.identfy')
-        motor_3 = getValueConfig(self.motor_configs_header,'motor3.identfy')
-        motor_4 = getValueConfig(self.motor_configs_header,'motor4.identfy')
-
-        self.motor_list.append(motor_0)
-        self.motor_list.append(motor_1)
-        self.motor_list.append(motor_2)
-        self.motor_list.append(motor_3)
-        self.motor_list.append(motor_4)
-
-        return self.motor_list
+        try: 
+            # send message
+            self.bus.send(msg)
+            time.sleep(0.1)
+            # print("MENSAJE ENVIADO: " + str(msg.data))
+            # print("\n")
+        
+        # ------------------ read message ----------------------
+            receive_message = self.bus.recv(3.0)
+            if receive_message is None:
+                print('Timeout occurred, no message.')
+                # os.system('sudo /sbin/ip link set can0 down')
+                self.bus.flush_tx_buffer()
+                # self.bus.shutdown()
+                self.set=0
+                
+            return receive_message
+        except Exception as e:
+            print("Fallo por el bus: ",e)
+        finally:
+            self.bus.flush_tx_buffer()
+            self.bus.shutdown()
+            if self.set==0:
+                self.setup()
     
     def send_motion(self,angulos,speeds):
         #Tareas en paralelo
@@ -228,7 +217,6 @@ class RMDX:
             for motor, angulo,speed in zip(self.motor_list,angulos,speeds):
                 task = executor.submit(self.send_pos_with_speed,motor,angulo,speed)
                 movimiento.append(task)
-                sleep(0.01)
             
             #esperar a quee todas las tareas se completen
             concurrent.futures.wait(movimiento)
@@ -237,7 +225,6 @@ class RMDX:
         value = float(speed)  
         data_send = self.decoi.getDataSpeed(value)
         res = self.setSpeedClosedLoop(motor_id,data_send)
-        sleep(0.01)
 
     def send_rotational_motion(self,speeds):
         print("sending rotational motion ..")
@@ -248,63 +235,59 @@ class RMDX:
             for motor,speed in zip(self.motor_list,speeds):
                 task = executor.submit(self.send_speed,motor,speed)
                 movimiento.append(task)
-                sleep(0.01)
             
             #esperar a quee todas las tareas se completen
             concurrent.futures.wait(movimiento)
-    
-    #def control_stop_motor(self, sensors, states):
 
-        # zero_speed = [-80.0,-40.0,-32.0,-20.0,0.0]
-        # send_rotational_motion(motor_list,zero_speed)
-
-        # if (sensors[0] == True ) and states[0] == False:  
-        #     self.general_comand(self.motor_list[0],6)
-        #     states[0] = True
-        # elif (states[0] == True) and (sensors[0] != True):
-        #     states[0] = False
-        #     self.send_speed(self.motor_list[0],zero_speed[0])
-        
-        
-            # states[3] = True
-        #elif(sensors[3] == False):
-        #    states[3] = False
-            
-
-    
     def send_action_set_zero_motors(self,motors):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             action = [] 
             for motor in motors:
                 task = executor.submit(self.general_comand(motor,1))
                 action.append(task)
-                sleep(0.01)
             
             concurrent.futures.wait(action)
+        
+    def get_angle_value(self,resp=0):
+        res_encoder=[0,0,0,0,0]
+        enc={"j1":"","j2":"","j3":"","j4":"","j5":""}
+        for j in range (5):
+            motor_id = self.motor_list[j]
+            encoder = self.general_comand(motor_id,3)
+            if (j==0 or j==3 or j==4):
+                res_encoder[j] = -1*(round((self.decoi.readMultiTurnAngle(encoder.data)),2))
+            else:
+                res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
+            if((res_encoder[j]<-360) and (j==0 or j==3 or j==4 )):
+                res_encoder[j]=-1*res_encoder[j]
+                res_encoder[j]=round(42949673-res_encoder[j],2) 
+            elif ((res_encoder[j]>360) and (j==1 or j==2)):
+                res_encoder[j]=round((-1*(42949673-res_encoder[j])),2)
+            enc[f"j{j+1}"]=res_encoder[j]   
+
+
+        # print("real_angle_value",res_encoder)
+        # print("Json: ", enc)
+        return enc if(resp==1) else res_encoder
+
     def motors_off(self):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             action = [] 
             for motor in self.motor_list:
                 task = executor.submit(self.general_comand(motor,8))
                 action.append(task)
-                sleep(0.01)
             
             concurrent.futures.wait(action)
     
     def motors_on(self):
         self.send_motion(self.get_angle_value(),[40,40,40,40,40])
         
-        
-        
-        
-    
     def send_action_reset_motors(self, motors):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             action = [] 
             for motor in motors:
                 task = executor.submit(self.general_comand(motor,10))
                 action.append(task)
-                sleep(0.01)
                 
             
             #esperar a quee todas las tareas se completen
@@ -327,7 +310,6 @@ class RMDX:
             for motor, angulo,speed in zip(self.motor_list,angulos,speeds):
                 task = executor.submit(self.send_pos_with_speed,motor,angulo,speed)
                 movimiento.append(task)
-                sleep(0.01)
             
             #esperar a quee todas las tareas se completen
             concurrent.futures.wait(movimiento)
@@ -354,14 +336,14 @@ class RMDX:
                 sleep(0.001)
         except:
             print("Stop arduino")
-
+    
     def going_to_zero(self):
         set_motors = True
         rev_set_motors = True
         #speed for set zero rutine
         zero_speed = [-80.0,-40.0,-32.0,-30.0,0.0] #velocidad minima motor 3 = 30
         #zero_speed = [0.0,0.0,0.0,-20.0,0.0] #velocidad minima motor 3 = 30
-        angulos_zero_kine =[164.0,92.8,158.47,22.0,0]
+        angulos_zero_kine =[164.0,93,158.47,22.0,0]
         speed_kine=[80.0,120.0,40.0,40.0,40.0]
 
         # Inicia un hilo para ejecutar el metodo de lectura de pines arduino
@@ -425,51 +407,3 @@ class RMDX:
 
 
         print("Finish set zero")
-
-    def get_angle_value(self,resp=0):
-        res_encoder=[0,0,0,0,0]
-        enc={"j1":"","j2":"","j3":"","j4":"","j5":""}
-        for j in range (5):
-            motor_id = self.motor_list[j]
-            encoder = self.general_comand(motor_id,3)
-            if (j==0 or j==3 or j==4):
-                res_encoder[j] = -1*(round((self.decoi.readMultiTurnAngle(encoder.data)),2))
-            else:
-                res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
-            if((res_encoder[j]<-360) and (j==0 or j==3 or j==4 )):
-                res_encoder[j]=-1*res_encoder[j]
-                res_encoder[j]=round(42949673-res_encoder[j],2) 
-            elif ((res_encoder[j]>360) and (j==1 or j==2)):
-                res_encoder[j]=round((-1*(42949673-res_encoder[j])),2)
-            enc[f"j{j+1}"]=res_encoder[j]   
-
-
-        # print("real_angle_value",res_encoder)
-        # print("Json: ", enc)
-        return enc if(resp==1) else res_encoder
-
-    def path_plannig(self,angle_final=[0.0,0.0,0.0,0.0,0.0],speed=[0.0,0.0,0.0,0.0,0.0],steps=2):
-        kn = Kine()
-        pos_final= list()
-        start = self.get_angle_value()
-        # for motor in self.motor_list:
-        #     angulo_final = float(input(f"angulo final {motor} : "))
-        #     pos_final.append(angulo_final)
-        for angle in angle_final:
-            angulo_final=float(angle)
-            pos_final.append(angulo_final)
-
-        print("objetivo",pos_final)
-
-        sub_motion = kn.path_plannig(start,pos_final,steps)
-        for array in sub_motion:
-            self.send_motion(array,speed)
-            sleep(0.1)
-
-
-    
-    
-
-
-
-

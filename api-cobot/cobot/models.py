@@ -47,3 +47,63 @@ class Sequence(models.Model):
     movement5 = models.ForeignKey(
         Movement, null=True, on_delete=models.CASCADE, related_name="sequence5"
     )
+    movement6 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence6"
+    )
+    movement7 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence7"
+    )
+    movement8 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence8"
+    )
+    movement9 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence9"
+    )
+    movement10 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence10"
+    )
+    movement11 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence11"
+    )
+    movement12 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence12"
+    )
+    movement13 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence13"
+    )
+    movement14 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence14"
+    )
+    movement15 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence15"
+    )
+    movement16 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence16"
+    )
+    movement17 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence17"
+    )
+    movement18 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence18"
+    )
+    movement19 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence19"
+    )
+    movement20 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence20"
+    )
+    movement21 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence21"
+    )
+    movement22 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence22"
+    )
+    movement23 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence23"
+    )
+    movement24 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence24"
+    )
+    movement25 = models.ForeignKey(
+        Movement, null=True, on_delete=models.CASCADE, related_name="sequence25"
+    )
