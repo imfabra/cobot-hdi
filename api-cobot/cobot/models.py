@@ -3,11 +3,11 @@ from django.db import models
 
 class Point(models.Model):
     name = models.CharField(max_length=5, primary_key=True)
-    motor1_angle = models.IntegerField(default=0)
-    motor2_angle = models.IntegerField(default=0)
-    motor3_angle = models.IntegerField(default=0)
-    motor4_angle = models.IntegerField(default=0)
-    motor5_angle = models.IntegerField(default=0)
+    motor1_angle = models.FloatField(default=0.0)
+    motor2_angle = models.FloatField(default=0.0)
+    motor3_angle = models.FloatField(default=0.0)
+    motor4_angle = models.FloatField(default=0.0)
+    motor5_angle = models.FloatField(default=0.0)
 
 
 class Movement(models.Model):

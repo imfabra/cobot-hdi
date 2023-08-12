@@ -356,11 +356,12 @@ class RMDX:
             print("Stop arduino")
 
     def going_to_zero(self):
+        self.run_read_arduino = True
         set_motors = True
         rev_set_motors = True
         #speed for set zero rutine
         zero_speed = [-80.0,-40.0,-32.0,-30.0,0.0] #velocidad minima motor 3 = 30
-        #zero_speed = [0.0,0.0,0.0,-20.0,0.0] #velocidad minima motor 3 = 30
+        #zero_speed = [0.0,0.0,0.0,0.0,0.0] #velocidad minima motor 3 = 30
         angulos_zero_kine =[164.0,93,158.47,22.0,0]
         speed_kine=[80.0,120.0,40.0,40.0,40.0]
 

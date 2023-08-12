@@ -350,18 +350,19 @@ class RMDX:
                 if len(aux) != 0:
                     sensor_tramax = aux
                 self.sensor_trama = sensor_tramax
-                #print(self.sensor_trama)
+                # print(self.sensor_trama)
                 sleep(0.001)
         except:
             print("Stop arduino")
 
     def going_to_zero(self):
+        self.run_read_arduino = True
         set_motors = True
         rev_set_motors = True
         #speed for set zero rutine
         zero_speed = [-80.0,-40.0,-32.0,-30.0,0.0] #velocidad minima motor 3 = 30
         #zero_speed = [0.0,0.0,0.0,-20.0,0.0] #velocidad minima motor 3 = 30
-        angulos_zero_kine =[164.0,92.8,158.47,22.0,0]
+        angulos_zero_kine =[164.0,90,158.47,22.0,0]
         speed_kine=[80.0,120.0,40.0,40.0,40.0]
 
         # Inicia un hilo para ejecutar el metodo de lectura de pines arduino
@@ -395,6 +396,7 @@ class RMDX:
                 
                 for x in tqdm(range(4), desc="4. Set home motores", unit="Sec"):
                     if (sensor_trama[x] == True): 
+                        print("COMMAND STOP")
                         self.general_comand(self.motor_list[x],6)
                     else: 
                         rev_set_motors = False

@@ -66,3 +66,5 @@ if __name__ == '__main__':
             bt.run("C")
         if (x==8):
             bt.run("A")
+        if (x==9):
+            motors.read_to_arduino()

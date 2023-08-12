@@ -7,7 +7,6 @@ import json
 motors=RMDX()
 motors.setup()
 motors.getMotorList()
-
 bt=BT()
 
 @app.task
@@ -16,7 +15,18 @@ def cobot_home_reset():
     sleep(5)
 
 @app.task
-def cobot_movements(command, type, data):
+def cobot_points(command, type, data, velocity):
+    print("--------------- Point ------------------")
+    # Aqui ejecutar movimiento robot (Retardar movimiento) -> data[1]
+    motors.send_motion(data, velocity)
+    # ----------------------------------------------------------
+    print("Command: " + str(command))
+    print("Type: " + str(type))
+    print("Data: " + str(data[1]))
+    print("----------------------------------------")
+
+@app.task
+def cobot_movements(command, type, data, velocity):
     print("-------------- Movement ----------------")
     print("Command: " + str(command))
     print("Type: " + str(type))
@@ -31,7 +41,7 @@ def cobot_movements(command, type, data):
             status_list = True
             # Aqui ejecutar movimiento robot (Retardar movimiento) -> i[1]
             motors.send_motion(i[1],[40,40,40,40,40])
-            sleep(1)
+            sleep(2)
             print(i)
     if status_list == False:
         # Aqui llamar metodo gripper-> comando: data[1]
@@ -41,17 +51,7 @@ def cobot_movements(command, type, data):
             bt.run("A")
         print("Ejecutar Gripper A: ", data[1])
     print("----------------------------------------")
-
-
-@app.task
-def cobot_points(command, type, data):
-    print("--------------- Point ------------------")
-    # Aqui ejecutar movimiento robot (Retardar movimiento) -> data[1]
-    motors.send_motion(data[1],[40,40,40,40,40])
-    print("Command: " + str(command))
-    print("Type: " + str(type))
-    print("Data: " + str(data[1]))
-    print("----------------------------------------")
+    return 
 
 
 @app.task
@@ -62,10 +62,12 @@ def cobot_sequences(command, type, data):
     print("Type: " + str(type))
     print("Data: " + str(data))
     print("----------------------------------------")
+    angMaxA=0
     for i in data[1]:
         if len(i) != 0:
             # print(i)
-            cobot_movements(command, type, (i))
+            cobot_movements(command, type, i)
+            # print("anguloMaxA: ",angMaxA)
     print(pointsList)
 
 
