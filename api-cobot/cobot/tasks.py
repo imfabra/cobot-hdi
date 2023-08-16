@@ -1,6 +1,7 @@
 from api_cobot.celery import app
 from .modules.motors.rmdx_funtions import RMDX 
 from .modules.bluetooth.Bluetooth import BT
+from .modules.gripper.gripper import Gripper
 from time import sleep
 import json
 
@@ -12,49 +13,49 @@ class CobotTasks:
         self.motors=RMDX()
         self.motors.setup()
         self.motors.getMotorList()
-        self.bt=BT()
 
-        self.current_angles = [0.0]*5
+        self.bt=BT()
+        self.gripper = Gripper()
+
+        self.current_angles = self.motors.get_angle_value(0)
         self.expected_angles = [0.0]*5
 
-    def _speed_angles(self, current_angles, expected_angles, velocity=10):
-        if isinstance(velocity, int):
-            velocity = [velocity]*len(current_angles)
+    def _speed_angles(self,e_angles, vel=10):
+        timer_base = 0.5
+        angle_base = 20
+        c_angles = self.motors.get_angle_value(0)
+        if isinstance(vel, int):
+            vel = [vel]*len(c_angles)
 
-        full_angles = [abs((a)-(d)) for a, d in zip(current_angles, expected_angles)]
+        full_angles = [round(abs((a)-(d)),1) for a, d in zip(self.motors.get_angle_value(0), e_angles)]
 
         max_angle = max(full_angles)
-        speeds = [5 if round((v * angle / max_angle), 2) < 5 else round((v * angle / max_angle), 2) for angle, v in zip(full_angles, velocity)]
-
+        timer = (max_angle*timer_base)/angle_base
+        speeds = [round((v * angle / max_angle), 2) if max_angle != 0 else round((v * angle / 1), 2) for angle, v in zip(full_angles, vel)]
         print(f'''
             \r------- Velocidad Motores ------------
-            \rAngulos actuales:  {current_angles},
-            \rAngulos deseados:  {expected_angles},
+            \rAngulos actuales:  {c_angles},
+            \rAngulos deseados:  {e_angles},
             \rRecorrido motores: {full_angles},
             \rVelocidad:         {speeds}
             \r--------------------------------------
         ''')
 
-        return speeds
+        return speeds, timer
 
     def cobot_home_reset(self):
         self.current_angles = [0.0]*5
         self.motors.going_to_zero()
         sleep(3)
     
-    def cobot_points(self, command, type, data):
+    def cobot_points(self, command, type, d):
         print("--------------- Point ------------------")
-        # Aqui ejecutar movimiento robot (Retardar movimiento) -> data[1]
-        self.expected_angles = data[1]
-        velocity = self._speed_angles(self.current_angles, self.expected_angles, 50)
+        self.expected_angles = d[1]
+        velocity, sleep_stop = self._speed_angles(self.expected_angles, 40)
         self.motors.send_motion(self.expected_angles, velocity)
-        self.current_angles = self.expected_angles
-        # ----------------------------------------------------------
-        print("Command: " + str(command))
-        print("Type: " + str(type))
-        print("Data: " + str(data[1]))
-        print("----------------------------------------")
+        return sleep_stop
 
+        
     def cobot_movements(self, command, type, data):
         print("-------------- Movement ----------------")
         print("Command: " + str(command))
@@ -69,37 +70,34 @@ class CobotTasks:
             if len(angles) > 0:
                 status_list = True
                 # Aqui ejecutar movimiento robot (Retardar movimiento) -> i[1]
-                # self.motors.send_motion(i[1],[40,40,40,40,40])
-                self.cobot_points(command, type, angles)
+                #self.motors.send_motion(angles[1],[40,40,40,40,40])
+                stop = self.cobot_points(command, type, angles)
                 print(angles)
-                sleep(3)
+                sleep(stop)
         if status_list == False:
             # Aqui llamar metodo gripper-> comando: data[1]
             if(data[1] == True):
-                self.bt.run("C")
+                # self.bt.run("C")
+                self.gripper.gripper_cli("1")
             elif(data[1] == False):
-                self.bt.run("A")
+                # self.bt.run("A")
+                self.gripper.gripper_cli("1")
             print("Ejecutar Gripper A: ", data[1])
         print("----------------------------------------")
         return 
     
     def cobot_sequences(self, command, type, data):
-        pointsList = []
         print("-------------- Sequences ---------------")
         print("Command: " + str(command))
         print("Type: " + str(type))
         print("Data: " + str(data))
         print("----------------------------------------")
-        angMaxA=0
         for i in data[1]:
             if len(i) != 0:
-                # print(i)
                 self.cobot_movements(command, type, i)
-                # print("anguloMaxA: ",angMaxA)
-        print(pointsList)
 
     def cobot_angles(self):
-        anglesX = json.dumps(self.motors.get_angle_value(1))
+        anglesX = self.motors.get_angle_value(1)
         return anglesX
     
     def motors_off(self):
@@ -118,17 +116,17 @@ def cli_tasks(cli):
     if cli == "home":
         cobottasks.cobot_home_reset()
     elif cli == "angles":
-        cobottasks.cobot_angles()
+        return json.dumps(cobottasks.cobot_angles())
     elif cli == "motors_off":
         cobottasks.motors_off()
     elif cli == "motors_on":
         return json.dumps(cobottasks.motors_on())
 
 @app.task
-def executor_tasks(command, type, data):
+def executor_tasks(command, type, da):
     if type == "point":
-        cobottasks.cobot_points(command, type, data)
+        cobottasks.cobot_points(command, type, da)
     elif type == "movement":
-        cobottasks.cobot_movements(command, type, data)
+        cobottasks.cobot_movements(command, type, da)
     elif type == "sequence":
-        cobottasks.cobot_movements(command, type, data)
+        cobottasks.cobot_sequences(command, type, da)

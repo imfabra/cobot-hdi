@@ -342,7 +342,7 @@ class RMDX:
     def read_to_arduino(self):
         try:
             self.ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=None)
-            sensor_tramax = [False, False, False, False, False, False]
+            sensor_tramax = [False, False, False, False, False]
             while self.run_read_arduino:
                 # ----- Abrir conexion serial con arduino ----
                 data = self.ser.readline().decode().strip()
@@ -360,7 +360,7 @@ class RMDX:
         set_motors = True
         rev_set_motors = True
         #speed for set zero rutine
-        zero_speed = [-80.0,-40.0,-32.0,-30.0,0.0] #velocidad minima motor 3 = 30
+        zero_speed = [-40.0,-40.0,-32.0,-30.0,0.0] #velocidad minima motor 3 = 30
         #zero_speed = [0.0,0.0,0.0,-20.0,0.0] #velocidad minima motor 3 = 30
         angulos_zero_kine =[164.0,90,158.47,22.0,0]
         speed_kine=[80.0,120.0,40.0,40.0,40.0]
@@ -430,7 +430,7 @@ class RMDX:
 
     def get_angle_value(self,resp=0):
         res_encoder=[0,0,0,0,0]
-        enc={"j1":"","j2":"","j3":"","j4":"","j5":""}
+        enc={"name":"", "motor1_angle":"","motor2_angle":"","motor3_angle":"","motor4_angle":"","motor5_angle":""}
         for j in range (5):
             motor_id = self.motor_list[j]
             encoder = self.general_comand(motor_id,3)
@@ -443,7 +443,7 @@ class RMDX:
                 res_encoder[j]=round(42949673-res_encoder[j],2) 
             elif ((res_encoder[j]>360) and (j==1 or j==2)):
                 res_encoder[j]=round((-1*(42949673-res_encoder[j])),2)
-            enc[f"j{j+1}"]=res_encoder[j]   
+            enc[f"motor{j+1}_angle"]=res_encoder[j] 
 
 
         # print("real_angle_value",res_encoder)

@@ -6,6 +6,7 @@ from cobot.serializer import PointSerializer, MovementSerializer, SequenceSerial
 from cobot.models import Point, Movement, Sequence
 from cobot.querysets import QuerySets
 from cobot.cobot import Cobot
+import json
 
 my_cobot = Cobot()
 
@@ -82,14 +83,14 @@ class PostCommandsView(APIView):
                 return Response({"Ok": "Going to Zero."})
             elif data_type=="angles":
                 x = my_cobot.run_command(command, data_type)
-                return Response({"Angles":x.replace("\"", "")})
+                return Response(json.loads(x))
             elif data_type=="motors_off":
                 my_cobot.run_command(command, data_type)
                 return Response({"state_motors":"Off"})
             elif data_type=="motors_on":
                 x = my_cobot.run_command(command, data_type)
                 print("En view data: ", x)
-                return Response({"state_motors": "on", "data":x.replace("\"", "")})
+                return Response(json.loads(x))
             else:
                 return Response({"error": "Invalid data type."})
         else:
