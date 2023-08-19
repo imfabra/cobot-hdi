@@ -31,7 +31,8 @@ class CobotTasks:
 
         max_angle = max(full_angles)
         timer = (max_angle*timer_base)/angle_base
-        speeds = [round((v * angle / max_angle), 2) if max_angle != 0 else round((v * angle / 1), 2) for angle, v in zip(full_angles, vel)]
+        aux_speeds = [round((v * angle / max_angle), 2) if max_angle !=0 else round((v * angle / 1), 2) for angle, v in zip(full_angles, vel)]
+        speeds = [min_sp if min_sp > 4 else 4 for min_sp in aux_speeds]
         print(f'''
             \r------- Velocidad Motores ------------
             \rAngulos actuales:  {c_angles},
@@ -51,7 +52,9 @@ class CobotTasks:
     def cobot_points(self, command, type, d):
         print("--------------- Point ------------------")
         self.expected_angles = d[1]
-        velocity, sleep_stop = self._speed_angles(self.expected_angles, 40)
+        #velocity, sleep_stop = self._speed_angles(self.expected_angles, 50)
+        velocity = [50]*5 
+        sleep_stop = 3
         self.motors.send_motion(self.expected_angles, velocity)
         return sleep_stop
 
@@ -79,9 +82,11 @@ class CobotTasks:
             if(data[1] == True):
                 # self.bt.run("C")
                 self.gripper.gripper_cli("1")
+                
             elif(data[1] == False):
                 # self.bt.run("A")
                 self.gripper.gripper_cli("1")
+                
             print("Ejecutar Gripper A: ", data[1])
         print("----------------------------------------")
         return 

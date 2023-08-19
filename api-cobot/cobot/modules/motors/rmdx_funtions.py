@@ -432,15 +432,32 @@ class RMDX:
         res_encoder=[0,0,0,0,0]
         enc={"name":"", "motor1_angle":"","motor2_angle":"","motor3_angle":"","motor4_angle":"","motor5_angle":""}
         for j in range (5):
-            motor_id = self.motor_list[j]
+            aux = j
+            #if aux != 2: 
+            #    aux = 2
+            motor_id = self.motor_list[aux]
+
             encoder = self.general_comand(motor_id,3)
+
             if (j==0 or j==3 or j==4):
                 res_encoder[j] = -1*(round((self.decoi.readMultiTurnAngle(encoder.data)),2))
             else:
-                res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
-            if((res_encoder[j]<-360) and (j==0 or j==3 or j==4 )):
+                # La siguiente linea de codigo se implemento para solventar el error de lectura del motor 2,
+                # Al solucionar, solo dejar la linea res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
+                # Sin los if ni el for
+                if j == 2:
+                    for i in range(4):
+                        res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
+                else:
+                    res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
+            
+            #print(f"""Encoder sin manipular{j+1}: {res_encoder}""")
+
+            if((res_encoder[j]<(-360)) and (j==0 or j==3 or j==4 )):
                 res_encoder[j]=-1*res_encoder[j]
+                #print(f"""Encoder negado       {j+1}: {res_encoder}""")
                 res_encoder[j]=round(42949673-res_encoder[j],2) 
+                #print(f"""Encoder redondeado   {j+1}: {res_encoder}""")
             elif ((res_encoder[j]>360) and (j==1 or j==2)):
                 res_encoder[j]=round((-1*(42949673-res_encoder[j])),2)
             enc[f"motor{j+1}_angle"]=res_encoder[j] 

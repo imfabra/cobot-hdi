@@ -2,7 +2,7 @@ import serial
 
 class Gripper:
     def __init__(self):
-        self.ser = serial.Serial("/dev/ttyUSB1", 115200, timeout=None)
+        self.ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=None)
 
     def gripper_cli(self, cli):
         self.ser.write(f'{cli}'.encode())
