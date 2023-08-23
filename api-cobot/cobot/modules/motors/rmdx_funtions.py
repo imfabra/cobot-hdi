@@ -17,6 +17,7 @@ import RPi.GPIO as GPIO
 import serial
 import threading
 from tqdm import tqdm
+import ctypes
 
 
 
@@ -292,10 +293,21 @@ class RMDX:
             concurrent.futures.wait(action)
     
     def motors_on(self):
-        self.send_motion(self.get_angle_value(),[40,40,40,40,40])
+        angles = self.get_angle_value()
+        h = True
+
+        for i in angles:
+            if i > 360 or i < -360:
+                h = False
         
-        
-        
+        if h == True:
+            if angles[0] > 0 or angles[0] < 0 or angles[0] == 0:
+                self.send_motion(self.get_angle_value(),[30,30,30,30,30])
+            else:
+                print(f"""Error angulos lectura""")
+        else:
+            print(f"""Error angulos go zero""")
+
         
     
     def send_action_reset_motors(self, motors):
@@ -359,11 +371,13 @@ class RMDX:
         self.run_read_arduino = True
         set_motors = True
         rev_set_motors = True
+
+        
         #speed for set zero rutine
-        zero_speed = [-40.0,-40.0,-32.0,-30.0,0.0] #velocidad minima motor 3 = 30
+        zero_speed = [-40.0,-30.0,-40.0,-30.0,0.0] #velocidad minima motor 3 = 30
         #zero_speed = [0.0,0.0,0.0,-20.0,0.0] #velocidad minima motor 3 = 30
         angulos_zero_kine =[164.0,90,158.47,22.0,0]
-        speed_kine=[80.0,120.0,40.0,40.0,40.0]
+        speed_kine=[80.0,30.0,45.0,40.0,40.0]
 
         # Inicia un hilo para ejecutar el metodo de lectura de pines arduino
         print("going zero")
@@ -429,43 +443,29 @@ class RMDX:
         print("Finish set zero")
 
     def get_angle_value(self,resp=0):
-        res_encoder=[0,0,0,0,0]
-        enc={"name":"", "motor1_angle":"","motor2_angle":"","motor3_angle":"","motor4_angle":"","motor5_angle":""}
-        for j in range (5):
-            aux = j
-            #if aux != 2: 
-            #    aux = 2
-            motor_id = self.motor_list[aux]
-
-            encoder = self.general_comand(motor_id,3)
-
-            if (j==0 or j==3 or j==4):
-                res_encoder[j] = -1*(round((self.decoi.readMultiTurnAngle(encoder.data)),2))
-            else:
-                # La siguiente linea de codigo se implemento para solventar el error de lectura del motor 2,
-                # Al solucionar, solo dejar la linea res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
-                # Sin los if ni el for
-                if j == 2:
-                    for i in range(4):
-                        res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
-                else:
-                    res_encoder[j] = round((self.decoi.readMultiTurnAngle(encoder.data)),2)
+        try:
+            res_encoder=[0,0,0,0,0]
+            enc={"name":"", "motor1_angle":"","motor2_angle":"","motor3_angle":10,"motor4_angle":"","motor5_angle":""}
             
-            #print(f"""Encoder sin manipular{j+1}: {res_encoder}""")
+            # Cargar la biblioteca C++ compilada
+            encoders_read = ctypes.CDLL('/home/eva/Developer/cplus/read_encoders.so')
+            # Definir la firma de la función
+            encoders_read.obtenerSalida.restype = ctypes.POINTER(ctypes.c_float * 5)
+            # Llamar a la función de C++
+            resultado_ptr = encoders_read.obtenerSalida()
+            # Convertir el puntero en una lista Python
+            res_encoder = [round(resultado_ptr.contents[i], 1) for i in range(5)]
 
-            if((res_encoder[j]<(-360)) and (j==0 or j==3 or j==4 )):
-                res_encoder[j]=-1*res_encoder[j]
-                #print(f"""Encoder negado       {j+1}: {res_encoder}""")
-                res_encoder[j]=round(42949673-res_encoder[j],2) 
-                #print(f"""Encoder redondeado   {j+1}: {res_encoder}""")
-            elif ((res_encoder[j]>360) and (j==1 or j==2)):
-                res_encoder[j]=round((-1*(42949673-res_encoder[j])),2)
-            enc[f"motor{j+1}_angle"]=res_encoder[j] 
+            # print("real_angle_value",res_encoder)
+            # print("Json: ", enc)
 
-
-        # print("real_angle_value",res_encoder)
-        # print("Json: ", enc)
-        return enc if(resp==1) else res_encoder
+            for j in range(5):
+                enc[f"motor{j+1}_angle"]=res_encoder[j]
+            
+            return enc if(resp==1) else res_encoder
+        except Exception as e:
+            print(f"""Error lectura cadena motores: {e}""")
+            return {"name":"", "motor1_angle":"","motor2_angle":"","motor3_angle":"","motor4_angle":"","motor5_angle":""} if(resp==1) else [0,0,0,0,0]
 
     def path_plannig(self,angle_final=[0.0,0.0,0.0,0.0,0.0],speed=[0.0,0.0,0.0,0.0,0.0],steps=2):
         kn = Kine()

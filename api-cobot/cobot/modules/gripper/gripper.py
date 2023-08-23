@@ -1,4 +1,5 @@
 import serial
+import time
 
 class Gripper:
     def __init__(self):

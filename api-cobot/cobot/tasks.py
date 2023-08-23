@@ -21,18 +21,19 @@ class CobotTasks:
         self.expected_angles = [0.0]*5
 
     def _speed_angles(self,e_angles, vel=10):
-        timer_base = 0.5
-        angle_base = 20
+        timer_base = 1
+        angle_base = 25
         c_angles = self.motors.get_angle_value(0)
+
+        full_angles = [round(abs((a)-(d)),1) for a, d in zip(self.motors.get_angle_value(0), e_angles)]
+        max_angle = max(full_angles)
+
         if isinstance(vel, int):
             vel = [vel]*len(c_angles)
 
-        full_angles = [round(abs((a)-(d)),1) for a, d in zip(self.motors.get_angle_value(0), e_angles)]
-
-        max_angle = max(full_angles)
         timer = (max_angle*timer_base)/angle_base
         aux_speeds = [round((v * angle / max_angle), 2) if max_angle !=0 else round((v * angle / 1), 2) for angle, v in zip(full_angles, vel)]
-        speeds = [min_sp if min_sp > 4 else 4 for min_sp in aux_speeds]
+        speeds = [min_sp if min_sp > 4 else 3 for min_sp in aux_speeds]
         print(f'''
             \r------- Velocidad Motores ------------
             \rAngulos actuales:  {c_angles},
@@ -41,7 +42,6 @@ class CobotTasks:
             \rVelocidad:         {speeds}
             \r--------------------------------------
         ''')
-
         return speeds, timer
 
     def cobot_home_reset(self):
@@ -51,11 +51,14 @@ class CobotTasks:
     
     def cobot_points(self, command, type, d):
         print("--------------- Point ------------------")
+
         self.expected_angles = d[1]
-        #velocity, sleep_stop = self._speed_angles(self.expected_angles, 50)
-        velocity = [50]*5 
-        sleep_stop = 3
+        velocity, sleep_stop = self._speed_angles(self.expected_angles, 45)
+        #velocity = [50]*5 
+        #sleep_stop = 3
         self.motors.send_motion(self.expected_angles, velocity)
+        print(f"""timer: {sleep_stop}""")
+        print("----------------------------------------")
         return sleep_stop
 
         
@@ -77,15 +80,17 @@ class CobotTasks:
                 stop = self.cobot_points(command, type, angles)
                 print(angles)
                 sleep(stop)
+                # sleep(0.25)
         if status_list == False:
             # Aqui llamar metodo gripper-> comando: data[1]
             if(data[1] == True):
                 # self.bt.run("C")
                 self.gripper.gripper_cli("1")
-                
+                sleep(1.5)
             elif(data[1] == False):
                 # self.bt.run("A")
                 self.gripper.gripper_cli("1")
+                sleep(1.5)
                 
             print("Ejecutar Gripper A: ", data[1])
         print("----------------------------------------")
