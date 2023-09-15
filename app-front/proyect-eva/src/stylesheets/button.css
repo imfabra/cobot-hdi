@@ -1,0 +1,29 @@
+.button {
+  display: flex;
+  font-size: 1rem;
+  padding: 3px;
+  border-radius: 8px;
+  background-color: rgb(3, 77, 187);
+  cursor: pointer;
+  user-select: none;
+  border: none;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.656);
+  margin-bottom: 3px;
+  margin-right: 3px;
+  font-weight: 500;
+  color: rgb(255, 255, 255);
+}
+.button:hover {
+  background-color: rgb(21, 121, 154);
+  box-shadow: 0 0 3px 1px rgba(21, 121, 154, 0.484);
+}
+.button:active {
+  background-color: rgb(67, 156, 186);
+}
+.red{
+  background-color: rgb(253, 65, 65);
+}
+.red:hover{
+  background-color: rgb(255, 0, 0);
+  box-shadow: 0 0 3px 1px rgba(255, 61, 61, 0.432);
+}

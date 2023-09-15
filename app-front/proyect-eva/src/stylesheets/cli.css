@@ -1,0 +1,11 @@
+.card-cli{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around ;
+  align-items: center;
+  background-color: aquamarine;
+  border-radius: 16px;
+  margin-right: 2px;
+  height: 470px;
+  width: 100px;
+}
