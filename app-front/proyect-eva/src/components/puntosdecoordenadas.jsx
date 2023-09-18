@@ -487,10 +487,8 @@ function Pcoordenadas(prop) {
                             name: p.name,
                           };
 
-                          const confirmacionplaypoint1 = window.confirm(
-                            "Advertencia: Estás a punto de mover el robot. Por favor, asegúrate de que estás seleccionando la acción correcta y que el entorno es seguro. ¿Estás seguro de que deseas proceder con el movimiento del robot?"
-                          );
-                          if (confirmacionplaypoint1) {
+                          
+                          
                             try {
                               await playpoint(enviarPunto);
                               toast.success("Robot Moviendose", {
@@ -501,11 +499,7 @@ function Pcoordenadas(prop) {
                                 position: "bottom-right",
                               });
                             }
-                          } else {
-                            toast.error("The move has been canceled", {
-                              position: "bottom-right",
-                            });
-                          }
+                          
                         }}
                       />
                     </div>
@@ -847,15 +841,12 @@ function Pcoordenadas(prop) {
                     <AiOutlinePlayCircle
                       className="play-punto"
                       onClick={async () => {
-                        const afirmarsequence = window.confirm(
-                          "Advertencia: Estás a punto de mover el robot. Por favor, asegúrate de que estás seleccionando la acción correcta y que el entorno es seguro. ¿Estás seguro de que deseas proceder con el movimiento del robot?"
-                        );
+                        
                         const playseq = {
                           command: "play",
                           type: "sequence",
                           name: item.name,
                         };
-                        if (afirmarsequence) {
                           try {
                             await playsequence(playseq);
                             toast.success("Robot Moviendose", {
@@ -866,7 +857,6 @@ function Pcoordenadas(prop) {
                               position: "bottom-right",
                             });
                           }
-                        }
                       }}
                     />
                   </div>
@@ -879,7 +869,18 @@ function Pcoordenadas(prop) {
                   [${item.movement2}],
                   [${item.movement3}],
                   [${item.movement4}],
-                  [${item.movement5}]`}
+                  [${item.movement5}],
+                  [${item.movement6}],
+                  [${item.movement7}],
+                  [${item.movement8}],
+                  [${item.movement9}],
+                  [${item.movement10}],
+                  [${item.movement11}],
+                  [${item.movement12}],
+                  [${item.movement13}],
+                  [${item.movement14}],
+                  [${item.movement15}],
+                  `}
                     </div>
                   </div>
 
