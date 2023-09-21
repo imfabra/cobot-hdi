@@ -35,7 +35,8 @@ class CobotTasks:
         timer = 1 if timer<1 else timer
         aux_speeds = [round((v * angle / max_angle), 2) if max_angle !=0 else round((v * angle / 1), 2) for angle, v in zip(full_angles, vel)]
         speeds = [min_sp if min_sp > 4 else 3 for min_sp in aux_speeds]
-        speeds[0]= 20 if speeds[0]<20 else speeds[0]
+        #speeds[1] = speeds[1]+(speeds[1]*0.10)
+        speeds[0]= 20 if speeds[0]< 20 else speeds[0]
         speeds[1]= 10 if speeds[1]<10 else speeds[1]
         speeds[2]= 10 if speeds[2]<10 else speeds[2]
         speeds[3]= 10 if speeds[3]<10 else speeds[3]
@@ -59,7 +60,7 @@ class CobotTasks:
         print("--------------- Point ------------------")
 
         self.expected_angles = d[1]
-        velocity, sleep_stop = self._speed_angles(self.expected_angles, 60)
+        velocity, sleep_stop = self._speed_angles(self.expected_angles, 40)
         #velocity = [50]*5 
         #sleep_stop = 3
         self.motors.send_motion(self.expected_angles, velocity)
