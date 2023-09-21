@@ -607,7 +607,10 @@ function Pcoordenadas(prop) {
       console.log(`requestData: ${JSON.stringify(requestData)}`);
       const res = await updateMovement(currentMovement.name, requestData);
       console.log(res);
+      const movementsres = await getAllMovements();
+      setMovementOptions(movementsres.data)
       toast.success(`${currentMovement.name} ha sido actualizado`);
+
     } else {
       toast.error("Verifica si hay elementos", {
         position: "bottom-right",
@@ -740,9 +743,6 @@ function Pcoordenadas(prop) {
               ) : (
                 <li /*  className="img-none"  */>
                   Empty list.
-                  {/* <div className="no-data-img" >
-                  <img src={require("../images/folder(1).png")} alt="lista-vacia" title="Crea una lista" width={"100px"} />
-                </div> */}
                 </li>
               )}
             </ReactSortable>
@@ -882,11 +882,7 @@ function Pcoordenadas(prop) {
                       type: "movement",
                       name: currentMovement.name,
                     };
-                    if (
-                      window.confirm(
-                        "Advertencia: Estás a punto de mover el robot. Por favor, asegúrate de que estás seleccionando la acción correcta y que el entorno es seguro. ¿Estás seguro de que deseas proceder con el movimiento del robot?"
-                      )
-                    ) {
+                    
                       try {
                         playpoint(enviarmovement);
                         toast.success("Robot Moviendose", {
@@ -898,11 +894,7 @@ function Pcoordenadas(prop) {
                           position: "bottom-right",
                         });
                       }
-                    } else {
-                      toast.error("se cancelo el movimiento del robot", {
-                        position: "bottom-right",
-                      });
-                    }
+                    
                   } else {
                     toast.error("Select a movement", {
                       position: "bottom-right",
@@ -948,14 +940,11 @@ function Pcoordenadas(prop) {
       <div className="container-card card-full">
         <h2 className="titulo-card">View Sequences</h2>
         <ul className="container-li conteiner-viewSequences">
-          <ReactSortable
-            list={sequenceOptions}
-            setList={setSequenceOptions}
-            className="flex-center-li ancho"
-          >
             {Array.isArray(sequenceOptions) && sequenceOptions.length > 0 ? (
               sequenceOptions.map((item, index) => (
-                <li className="lista-li li-grandes" key={index}>
+                <li className="lista-li li-grandes li-click" onClick={()=>{
+                  console.log(`Click en ${item}`);
+                }} key={index}>
                   <div className="separacion-play">
                     <AiOutlinePlayCircle
                       className="play-punto"
@@ -1039,7 +1028,6 @@ function Pcoordenadas(prop) {
                 </div>
               </li>
             )}
-          </ReactSortable>
         </ul>
       </div>
     </>

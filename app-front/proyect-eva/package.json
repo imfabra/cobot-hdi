@@ -46,6 +46,7 @@
   "devDependencies": {
     "@types/sortablejs": "^1.15.2",
     "eslint": "^8.49.0",
-    "eslint-plugin-jest": "^25.7.0"
+    "eslint-plugin-jest": "^25.7.0",
+    "eslint-plugin-react": "^7.33.2"
   }
 }
