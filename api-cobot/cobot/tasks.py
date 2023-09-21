@@ -22,7 +22,7 @@ class CobotTasks:
 
     def _speed_angles(self,e_angles, vel=10):
         timer_base = 1
-        angle_base = 25
+        angle_base = 23
         c_angles = self.motors.get_angle_value(0)
 
         full_angles = [round(abs((a)-(d)),1) for a, d in zip(self.motors.get_angle_value(0), e_angles)]
