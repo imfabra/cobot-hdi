@@ -34,8 +34,10 @@ const movimientosApi = axios.create({
   baseURL:`${urlpp}edit/movement`
 })
 export const getAllMovements = () => movimientosApi.get('/')
+export const geMovement = (id) => movimientosApi.get(`/${id}`)
 export const createMovements = (movement) => movimientosApi.post('/', movement)
 export const deleteMovements = (name) => movimientosApi.delete(`/${name}/`)
+export const updateMovement = (id, movement) => movimientosApi.put(`/${id}/`, movement);
 
 
 //sequence service

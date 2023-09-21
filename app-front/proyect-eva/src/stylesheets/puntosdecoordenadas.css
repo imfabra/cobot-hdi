@@ -11,18 +11,18 @@
   border-radius: 20px;
   background-color: white;
 }
-small{
+small {
   color: tomato;
 }
-.flex-center-li{
+.flex-center-li {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.ancho{
+.ancho {
   width: 100%;
 }
-.lista-li{
+.lista-li {
   cursor: move;
   user-select: none;
 }
@@ -97,7 +97,7 @@ input.escribirname.input-coordenada {
   box-shadow: 0 0 5px red;
   cursor: pointer;
 }
-.img-none{
+.img-none {
   padding: 35px;
   display: flex;
   align-items: center;
@@ -106,7 +106,6 @@ input.escribirname.input-coordenada {
   height: 100%;
 }
 
-
 .botton-form {
   display: flex;
   flex-wrap: wrap;
@@ -114,10 +113,10 @@ input.escribirname.input-coordenada {
   justify-content: space-around;
   align-items: center;
 }
-.contenido1{
+.contenido1 {
   width: 55%;
 }
-.contenido2{
+.contenido2 {
   width: 45%;
 }
 .img-none img {
@@ -153,7 +152,7 @@ input.escribirname.input-coordenada {
   overflow-y: auto; /* Añade un scroll vertical cuando sea necesario */
   overflow-x: hidden;
 }
-.lista-li{
+.lista-li {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -166,7 +165,7 @@ input.escribirname.input-coordenada {
   box-shadow: 0 1px 1px #0000006b;
   background-color: rgb(199, 199, 199);
 }
-.li-grandes{
+.li-grandes {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -225,12 +224,11 @@ input.escribirname.input-coordenada {
 .separacion-coordenada {
   padding-left: 10px;
   display: flex;
+  flex-wrap: wrap;
   font-size: 0.7rem;
   align-items: center;
   height: 100%;
   width: 90%;
-  overflow: auto;
-
 }
 .pld {
   display: flex;
@@ -238,7 +236,6 @@ input.escribirname.input-coordenada {
   width: 100%;
   justify-content: center;
   align-items: center;
-
 }
 
 .footer-card {
@@ -291,7 +288,7 @@ input.escribirname.input-coordenada {
   cursor: pointer;
 }
 .delete-all-lista:hover {
-  background-color: rgba(255, 34, 34, 0.79);
+  background-color: rgba(45, 255, 34, 0.79);
   box-shadow: 0 0 5px rgb(255, 105, 105);
   border-radius: 5px;
   transition: 0.3s ease;
@@ -357,7 +354,7 @@ input.escribirname.input-coordenada {
 }
 
 input:checked + .slider {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 input:checked + .slider:before {

@@ -12,6 +12,7 @@ import {
   getAllPoints,
   getpoint,
   getAngles,
+  updateMovement,
   createPoint,
   deletePoint,
   updatePoint,
@@ -25,6 +26,7 @@ import {
   playmovement,
   playsequence,
   manejoMotor,
+  geMovement,
 } from "../api/cobot.api";
 import { toast } from "react-hot-toast";
 import Cli from "./cli";
@@ -119,15 +121,13 @@ function Pcoordenadas(prop) {
   const actualizandoPunto = async () => {
     if (currentPunto) {
       try {
-        
-          const res = await updatePoint(currentPunto.name, watch());
-          const respuespuntos = await getAllPoints();
-          setpointsOptions(respuespuntos.data);
-          
-          toast.success(`${res.data.name} Actualizado`, {
-            position: "bottom-right",
-          });
-        
+        const res = await updatePoint(currentPunto.name, watch());
+        const respuespuntos = await getAllPoints();
+        setpointsOptions(respuespuntos.data);
+
+        toast.success(`${res.data.name} Actualizado`, {
+          position: "bottom-right",
+        });
       } catch (error) {
         toast.success(error.response.data.name, { position: "bottom-right" });
       }
@@ -135,22 +135,21 @@ function Pcoordenadas(prop) {
       toast.error("Seleccione un punto", { position: "bottom-right" });
     }
   };
-  const moverpunto= async ()=>{
+  const moverpunto = async () => {
     const enviarPunto = {
-                            command: "play",
-                            type: "point",
-                            name: currentPunto.name,
-                          };
+      command: "play",
+      type: "point",
+      name: currentPunto.name,
+    };
     try {
-        await playpoint(enviarPunto);        
-        toast.success(` Robot en movimiento `, {
-          position: "bottom-right", 
-        });
-      
+      await playpoint(enviarPunto);
+      toast.success(` Robot en movimiento `, {
+        position: "bottom-right",
+      });
     } catch (error) {
       toast.success(error.response.data.name, { position: "bottom-right" });
     }
-  }
+  };
 
   /* Esta accion borrala solo el punto seleccionado en movimientos */
   const deleteThismovement = (index) => {
@@ -164,10 +163,12 @@ function Pcoordenadas(prop) {
     movimientosRestantes.splice(index, 1);
     setMovementsList(movimientosRestantes);
   };
-  const [gri, setGri] = useState(false); //manejo del gripper para ver si esta seleccionado o no
+  const [gri, setGri] = useState(false);
+  //manejo del gripper para ver si esta seleccionado o no
   async function savePoints() {
     if (nameList !== "") {
       const list = new ListaPuntos(nameList, gri ? true : false, puntosList);
+      /* console.log(`list: ${JSON.stringify(list)}`); */
       try {
         await createMovements(list);
         setMovementOptions((listsOptions) => [...listsOptions, list]);
@@ -229,7 +230,7 @@ function Pcoordenadas(prop) {
     try {
       const res = await manejoMotor(jsonData);
       console.log(res.data);
-      if(res.data){
+      if (res.data) {
         setValue("name", res.data.name);
         setValue("motor1_angle", res.data.motor1_angle);
         setValue("motor2_angle", res.data.motor2_angle);
@@ -237,7 +238,7 @@ function Pcoordenadas(prop) {
         setValue("motor4_angle", res.data.motor4_angle);
         setValue("motor5_angle", res.data.motor5_angle);
       }
-      
+
       toast.success(
         `Motores ${newActiveState ? "encendidos" : "apagados"} con éxito.`,
         { position: "bottom-right" }
@@ -249,7 +250,6 @@ function Pcoordenadas(prop) {
       toast.error(error.response.data.name, { position: "bottom-right" });
     }
   };
-
 
   return (
     <>
@@ -347,7 +347,7 @@ function Pcoordenadas(prop) {
                     id="toggleSwitch"
                     checked={isActive}
                     onChange={() => {
-                        handleToggle();
+                      handleToggle();
                     }}
                   />
                   <span className="slider"></span>
@@ -396,7 +396,7 @@ function Pcoordenadas(prop) {
           {/* <Buttonsend textbutton="Guadar" onClick={()=>{console.log(i)}} /> */}
 
           <div className="separacion-borrarpunto">
-          <Button text={"Play Punto"} onClick={moverpunto} />
+            <Button text={"Play Punto"} onClick={moverpunto} />
             <Button text={"Update Punto"} onClick={actualizandoPunto} />
             <Button
               text="Delete Point"
@@ -487,19 +487,16 @@ function Pcoordenadas(prop) {
                             name: p.name,
                           };
 
-                          
-                          
-                            try {
-                              await playpoint(enviarPunto);
-                              toast.success("Robot Moviendose", {
-                                position: "bottom-right",
-                              });
-                            } catch (error) {
-                              toast.error(error.response.data.name, {
-                                position: "bottom-right",
-                              });
-                            }
-                          
+                          try {
+                            await playpoint(enviarPunto);
+                            toast.success("Robot Moviendose", {
+                              position: "bottom-right",
+                            });
+                          } catch (error) {
+                            toast.error(error.response.data.name, {
+                              position: "bottom-right",
+                            });
+                          }
                         }}
                       />
                     </div>
@@ -581,6 +578,51 @@ function Pcoordenadas(prop) {
               }}
             />
             <div className="separacion-borrarpunto">
+            <Button
+  text="Update Movement"
+  onClick={async () => {
+    var objetoResultado = {};
+
+    puntosList.forEach(function (objeto, indice) {
+      var clave = "point" + (indice + 1);
+      objetoResultado[clave] = objeto.name;
+    });
+
+    // Obtén la lista de puntos eliminados
+    const puntosEliminados = Object.keys(currentMovement)
+      .filter((key) => key.startsWith("point"))
+      .filter((key) => !objetoResultado[key]);
+
+    // Establece los puntos eliminados como null
+    puntosEliminados.forEach((punto) => {
+      objetoResultado[punto] = null;
+    });
+
+    if (currentMovement) {
+      const requestData = {
+        name: currentMovement.name,
+        gripper: gri,
+        ...objetoResultado,
+      };
+      console.log(`requestData: ${JSON.stringify(requestData)}`);
+      const res = await updateMovement(currentMovement.name, requestData);
+      console.log(res);
+      toast.success(`${currentMovement.name} ha sido actualizado`);
+    } else {
+      toast.error("Verifica si hay elementos", {
+        position: "bottom-right",
+      });
+    }
+  }}
+/>
+
+              <Button
+                text={"mostrar"}
+                onClick={() => {
+                  console.log(`PuntosList: ${JSON.stringify(puntosList)}`);
+                  /* console.log(` movementList: ${movementsList}`); */
+                }}
+              />
               <Button
                 text="Delete Point"
                 onClick={async () => {
@@ -650,25 +692,23 @@ function Pcoordenadas(prop) {
                       <AiOutlinePlayCircle
                         className="play-punto"
                         onClick={async () => {
-                         
                           const playmov = {
                             command: "play",
                             type: "movement",
                             name: p.name,
                           };
-                          
-                            try {
-                              await playmovement(playmov);
-                              console.log(playmov);
-                              toast.success("Robot Moviendose", {
-                                position: "bottom-right",
-                              });
-                            } catch (error) {
-                              toast.error(error.response.data.name, {
-                                position: "bottom-right",
-                              });
-                            }
-                          
+
+                          try {
+                            await playmovement(playmov);
+                            console.log(playmov);
+                            toast.success("Robot Moviendose", {
+                              position: "bottom-right",
+                            });
+                          } catch (error) {
+                            toast.error(error.response.data.name, {
+                              position: "bottom-right",
+                            });
+                          }
                         }}
                       />
                     </div>
@@ -720,13 +760,87 @@ function Pcoordenadas(prop) {
             <select
               className="select"
               defaultValue={""}
-              onChange={(e) => {
+              onChange={async (e) => {
                 const value = e.target.value;
-                console.log(` valor del punto:  ${value}`);
                 if (value === "") {
                   setCurrentMovement(null);
                 } else {
-                  setCurrentMovement(JSON.parse(e.target.value));
+                  try {
+                    const parsedMovement = JSON.parse(value);
+                    if (parsedMovement && parsedMovement.name) {
+                      setCurrentMovement(parsedMovement);
+                      /* console.log(parsedMovement.name); */
+                      const { data } = await geMovement(parsedMovement.name);
+                      /* console.log(data); */
+                      setNameList(data.name);
+
+                      const p1 =
+                        data.point1 !== null
+                          ? await getpoint(data.point1)
+                          : null;
+                      const p2 =
+                        data.point2 !== null
+                          ? await getpoint(data.point2)
+                          : null;
+                      const p3 =
+                        data.point3 !== null
+                          ? await getpoint(data.point3)
+                          : null;
+                      const p4 =
+                        data.point4 !== null
+                          ? await getpoint(data.point4)
+                          : null;
+                      const p5 =
+                        data.point5 !== null
+                          ? await getpoint(data.point5)
+                          : null;
+
+                      // Ahora puedes trabajar con p1, p2, p3, p4 y p5 sin preocuparte por errores si son null.
+
+                      for (let i = 0; i < data.length; i++) {
+                        console.log(i);
+                      }
+                      for (const clave in data) {
+                        if (clave.startsWith("point")) {
+                          const punto = data[clave];
+                          console.log(`Clave: ${clave}, Valor: ${punto}`);
+                          // Aquí puedes realizar cualquier acción que necesites con el punto
+                        }
+                      }
+
+                      const puntosList = [];
+
+                      if (p1 !== null) {
+                        puntosList.push(p1.data);
+                      }
+
+                      if (p2 !== null) {
+                        puntosList.push(p2.data);
+                      }
+
+                      if (p3 !== null) {
+                        puntosList.push(p3.data);
+                      }
+
+                      if (p4 !== null) {
+                        puntosList.push(p4.data);
+                      }
+
+                      if (p5 !== null) {
+                        puntosList.push(p5.data);
+                      }
+
+                      setPuntosList(puntosList);
+
+                      console.log(data);
+                    } else {
+                      console.error(
+                        "El objeto JSON no contiene una propiedad 'name'."
+                      );
+                    }
+                  } catch (error) {
+                    console.error("Error al analizar el valor JSON:", error);
+                  }
                 }
               }}
             >
@@ -796,6 +910,7 @@ function Pcoordenadas(prop) {
                   }
                 }}
               />
+
               <Button
                 text="Delete Movement"
                 onClick={async () => {
@@ -833,7 +948,11 @@ function Pcoordenadas(prop) {
       <div className="container-card card-full">
         <h2 className="titulo-card">View Sequences</h2>
         <ul className="container-li conteiner-viewSequences">
-          <ReactSortable list={sequenceOptions} setList={setSequenceOptions} className="flex-center-li ancho">
+          <ReactSortable
+            list={sequenceOptions}
+            setList={setSequenceOptions}
+            className="flex-center-li ancho"
+          >
             {Array.isArray(sequenceOptions) && sequenceOptions.length > 0 ? (
               sequenceOptions.map((item, index) => (
                 <li className="lista-li li-grandes" key={index}>
@@ -841,22 +960,21 @@ function Pcoordenadas(prop) {
                     <AiOutlinePlayCircle
                       className="play-punto"
                       onClick={async () => {
-                        
                         const playseq = {
                           command: "play",
                           type: "sequence",
                           name: item.name,
                         };
-                          try {
-                            await playsequence(playseq);
-                            toast.success("Robot Moviendose", {
-                              position: "bottom-right",
-                            });
-                          } catch (error) {
-                            toast.error(error.response.data.name, {
-                              position: "bottom-right",
-                            });
-                          }
+                        try {
+                          await playsequence(playseq);
+                          toast.success("Robot Moviendose", {
+                            position: "bottom-right",
+                          });
+                        } catch (error) {
+                          toast.error(error.response.data.name, {
+                            position: "bottom-right",
+                          });
+                        }
                       }}
                     />
                   </div>
@@ -865,22 +983,18 @@ function Pcoordenadas(prop) {
                       <b>{`${item.name}`}</b>
                     </div>
                     <div className="separacion-coordenada">
-                      {`[${item.movement1}],
-                  [${item.movement2}],
-                  [${item.movement3}],
-                  [${item.movement4}],
-                  [${item.movement5}],
-                  [${item.movement6}],
-                  [${item.movement7}],
-                  [${item.movement8}],
-                  [${item.movement9}],
-                  [${item.movement10}],
-                  [${item.movement11}],
-                  [${item.movement12}],
-                  [${item.movement13}],
-                  [${item.movement14}],
-                  [${item.movement15}],
-                  `}
+                      {/* Filtra y muestra solo los movimientos no nulos */}
+                      {Object.values(item)
+                        .slice(1) // Ignora el primer valor (name) y toma el resto
+                        .filter((movement) => movement !== null)
+                        .map((movement, movementIndex, filteredMovements) => (
+                          <span key={movementIndex}>
+                            [{movement}]
+                            {movementIndex < filteredMovements.length - 1 &&
+                              filteredMovements[movementIndex + 1] !== null &&
+                              ", "}
+                          </span>
+                        ))}
                     </div>
                   </div>
 
