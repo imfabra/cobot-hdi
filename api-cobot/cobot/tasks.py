@@ -22,7 +22,7 @@ class CobotTasks:
 
     def _speed_angles(self,e_angles, vel=10):
         timer_base = 1
-        angle_base = 20
+        angle_base = 25
         c_angles = self.motors.get_angle_value(0)
 
         full_angles = [round(abs((a)-(d)),1) for a, d in zip(self.motors.get_angle_value(0), e_angles)]
@@ -59,7 +59,7 @@ class CobotTasks:
         print("--------------- Point ------------------")
 
         self.expected_angles = d[1]
-        velocity, sleep_stop = self._speed_angles(self.expected_angles, 45)
+        velocity, sleep_stop = self._speed_angles(self.expected_angles, 60)
         #velocity = [50]*5 
         #sleep_stop = 3
         self.motors.send_motion(self.expected_angles, velocity)
