@@ -1,5 +1,5 @@
 import "../stylesheets/cli.css";
-import { getpoint, setHome } from "../api/cobot.api";
+import { getpoint, playpoint, setHome } from "../api/cobot.api";
 import { toast } from "react-hot-toast";
 
 const Cli = (props) => {
@@ -34,10 +34,27 @@ const Cli = (props) => {
     }
   };
   
+  const enviarHome = {
+    command: "play",
+    type: "point",
+    name: "home",
+  };
+  const enviarP0 = {
+    command: "play",
+    type: "point",
+    name: "p0",
+  };
+  const enviarGripper = {
+    command: "play",
+    type: "",
+    name: "",
+  };
   const home = async () => {
     try {
-      await getpoint(home);
-      toast.error(`Robot en movimiento  ->  home`, { position: "bottom-right" });
+     const res =await playpoint(enviarHome)
+       console.log(enviarHome);
+      console.log(res);
+      toast.success(`Robot en movimiento  ->  home`, { position: "bottom-right" });
     }catch(error){
       toast.error(`${error.response.data.name}`, { position: "bottom-right" });
 

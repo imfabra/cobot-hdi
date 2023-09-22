@@ -188,7 +188,7 @@ function Pcoordenadas(prop) {
   function savePointsList() {
     if (currentMovement !== "") {
       setMovementsList((m) => [...m, currentMovement]);
-      console.log(currentMovement);
+      /* console.log(currentMovement); */
     }
   }
 
@@ -196,6 +196,7 @@ function Pcoordenadas(prop) {
     if (sequenceName !== "") {
       try {
         const sequence = new Sequence(sequenceName, movementsList);
+        console.log(`sequence: ${JSON.stringify(sequence)}`);
         const response = await createsequence(sequence);
         if (response.data) {
           setSequenceOptions([...sequenceOptions, response.data]);
@@ -213,7 +214,7 @@ function Pcoordenadas(prop) {
   }
 
   //funcion para activar y desactivar motores
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const [previousState, setPreviousState] = useState(true);
 
   const handleToggle = async () => {
@@ -229,7 +230,7 @@ function Pcoordenadas(prop) {
     //esto es lo que se tiene que acomodar cuando se conecte a ARIA
     try {
       const res = await manejoMotor(jsonData);
-      console.log(res.data);
+      /* console.log(res.data); */
       if (res.data) {
         setValue("name", res.data.name);
         setValue("motor1_angle", res.data.motor1_angle);
@@ -578,54 +579,52 @@ function Pcoordenadas(prop) {
               }}
             />
             <div className="separacion-borrarpunto">
-            <Button
-  text="Update Movement"
-  onClick={async () => {
-    var objetoResultado = {};
-
-    puntosList.forEach(function (objeto, indice) {
-      var clave = "point" + (indice + 1);
-      objetoResultado[clave] = objeto.name;
-    });
-
-    // Obtén la lista de puntos eliminados
-    const puntosEliminados = Object.keys(currentMovement)
-      .filter((key) => key.startsWith("point"))
-      .filter((key) => !objetoResultado[key]);
-
-    // Establece los puntos eliminados como null
-    puntosEliminados.forEach((punto) => {
-      objetoResultado[punto] = null;
-    });
-
-    if (currentMovement) {
-      const requestData = {
-        name: currentMovement.name,
-        gripper: gri,
-        ...objetoResultado,
-      };
-      console.log(`requestData: ${JSON.stringify(requestData)}`);
-      const res = await updateMovement(currentMovement.name, requestData);
-      console.log(res);
-      const movementsres = await getAllMovements();
-      setMovementOptions(movementsres.data)
-      toast.success(`${currentMovement.name} ha sido actualizado`);
-
-    } else {
-      toast.error("Verifica si hay elementos", {
-        position: "bottom-right",
-      });
-    }
-  }}
-/>
-
               <Button
-                text={"mostrar"}
-                onClick={() => {
-                  console.log(`PuntosList: ${JSON.stringify(puntosList)}`);
-                  /* console.log(` movementList: ${movementsList}`); */
+                text="Update Movement"
+                onClick={async () => {
+                  var objetoResultado = {};
+
+                  puntosList.forEach(function (objeto, indice) {
+                    var clave = "point" + (indice + 1);
+                    objetoResultado[clave] = objeto.name;
+                  });
+
+                  // Obtén la lista de puntos eliminados
+                  const puntosEliminados = Object.keys(currentMovement)
+                    .filter((key) => key.startsWith("point"))
+                    .filter((key) => !objetoResultado[key]);
+
+                  // Establece los puntos eliminados como null
+                  puntosEliminados.forEach((punto) => {
+                    objetoResultado[punto] = null;
+                  });
+
+                  if (currentMovement) {
+                    const requestData = {
+                      name: currentMovement.name,
+                      gripper: gri,
+                      ...objetoResultado,
+                    };
+                    /* console.log(`requestData: ${JSON.stringify(requestData)}`); */
+                    const res = await updateMovement(
+                      currentMovement.name,
+                      requestData
+                    );
+                    /* console.log(res); */
+                    const movementsres = await getAllMovements();
+                    setMovementOptions(movementsres.data);
+                    toast.success(
+                      `${currentMovement.name} ha sido actualizado`
+                    );
+                  } else {
+                    toast.error("Verifica si hay elementos", {
+                      position: "bottom-right",
+                    });
+                  }
                 }}
               />
+
+          
               <Button
                 text="Delete Point"
                 onClick={async () => {
@@ -703,7 +702,7 @@ function Pcoordenadas(prop) {
 
                           try {
                             await playmovement(playmov);
-                            console.log(playmov);
+                            /* console.log(playmov); */
                             toast.success("Robot Moviendose", {
                               position: "bottom-right",
                             });
@@ -722,11 +721,12 @@ function Pcoordenadas(prop) {
                       </div>
                       <div className="separacion-coordenada">
                         {`[${p.gripper}],
-                      [${p.point1}],
-                      [${p.point2}],
-                      [${p.point3}],
-                      [${p.point4}],
-                      [${p.point5}]`}
+                        [${p.point1}],
+                        [${p.point2}],
+                        [${p.point3}],
+                        [${p.point4}],
+                        [${p.point5}]
+                      `}
                       </div>
                     </div>
 
@@ -741,9 +741,7 @@ function Pcoordenadas(prop) {
                   </li>
                 ))
               ) : (
-                <li /*  className="img-none"  */>
-                  Empty list.
-                </li>
+                <li /*  className="img-none"  */>Empty list.</li>
               )}
             </ReactSortable>
           </ul>
@@ -798,12 +796,12 @@ function Pcoordenadas(prop) {
                       // Ahora puedes trabajar con p1, p2, p3, p4 y p5 sin preocuparte por errores si son null.
 
                       for (let i = 0; i < data.length; i++) {
-                        console.log(i);
+                        /* console.log(i); */
                       }
                       for (const clave in data) {
                         if (clave.startsWith("point")) {
                           const punto = data[clave];
-                          console.log(`Clave: ${clave}, Valor: ${punto}`);
+                          /* console.log(`Clave: ${clave}, Valor: ${punto}`); */
                           // Aquí puedes realizar cualquier acción que necesites con el punto
                         }
                       }
@@ -832,7 +830,7 @@ function Pcoordenadas(prop) {
 
                       setPuntosList(puntosList);
 
-                      console.log(data);
+                      /* console.log(data); */
                     } else {
                       console.error(
                         "El objeto JSON no contiene una propiedad 'name'."
@@ -882,19 +880,18 @@ function Pcoordenadas(prop) {
                       type: "movement",
                       name: currentMovement.name,
                     };
-                    
-                      try {
-                        playpoint(enviarmovement);
-                        toast.success("Robot Moviendose", {
-                          position: "bottom-right",
-                        });
-                        console.log(enviarmovement);
-                      } catch (error) {
-                        toast.error(error.response.data.name, {
-                          position: "bottom-right",
-                        });
-                      }
-                    
+
+                    try {
+                      playpoint(enviarmovement);
+                      toast.success("Robot Moviendose", {
+                        position: "bottom-right",
+                      });
+                     /*  console.log(enviarmovement); */
+                    } catch (error) {
+                      toast.error(error.response.data.name, {
+                        position: "bottom-right",
+                      });
+                    }
                   } else {
                     toast.error("Select a movement", {
                       position: "bottom-right",
@@ -940,94 +937,100 @@ function Pcoordenadas(prop) {
       <div className="container-card card-full">
         <h2 className="titulo-card">View Sequences</h2>
         <ul className="container-li conteiner-viewSequences">
-            {Array.isArray(sequenceOptions) && sequenceOptions.length > 0 ? (
-              sequenceOptions.map((item, index) => (
-                <li className="lista-li li-grandes li-click" onClick={()=>{
-                  console.log(`Click en ${item}`);
-                }} key={index}>
-                  <div className="separacion-play">
-                    <AiOutlinePlayCircle
-                      className="play-punto"
-                      onClick={async () => {
-                        const playseq = {
-                          command: "play",
-                          type: "sequence",
-                          name: item.name,
-                        };
+          {Array.isArray(sequenceOptions) && sequenceOptions.length > 0 ? (
+            sequenceOptions.map((item, index) => (
+              <li
+                className="lista-li li-grandes li-click"
+                onClick={() => {
+                  /* movementsList(JSON.stringify(item)) */
+                  console.log(`Click en ${JSON.stringify(item)}`);
+                }}
+                
+                key={index}
+              >
+                <div className="separacion-play">
+                  <AiOutlinePlayCircle
+                    className="play-punto"
+                    onClick={async () => {
+                      const playseq = {
+                        command: "play",
+                        type: "sequence",
+                        name: item.name,
+                      };
+                      try {
+                        await playsequence(playseq);
+                        toast.success("Robot Moviendose", {
+                          position: "bottom-right",
+                        });
+                      } catch (error) {
+                        toast.error(error.response.data.name, {
+                          position: "bottom-right",
+                        });
+                      }
+                    }}
+                  />
+                </div>
+                <div className="pld">
+                  <div className="separacion-name">
+                    <b>{`${item.name}`}</b>
+                  </div>
+                  <div className="separacion-coordenada">
+                    {/* Filtra y muestra solo los movimientos no nulos */}
+                    {Object.values(item)
+                      .slice(1) // Ignora el primer valor (name) y toma el resto
+                      .filter((movement) => movement !== null)
+                      .map((movement, movementIndex, filteredMovements) => (
+                        <span key={movementIndex}>
+                          [{movement}]
+                          {movementIndex < filteredMovements.length - 1 &&
+                            filteredMovements[movementIndex + 1] !== null &&
+                            ", "}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+
+                <div className="separacion-delete">
+                  <AiOutlineCloseCircle
+                    className="delete-punto"
+                    onClick={async () => {
+                      const confirmdelete = window.confirm(
+                        "Advertencia: Estás a punto de borrar permanentemente una secuencia. Esta acción no se puede deshacer. Por favor, asegúrate de que estás seleccionando la secuencia correcta para eliminar. ¿Estás seguro de que deseas proceder con la eliminación?"
+                      );
+                      if (confirmdelete === true) {
                         try {
-                          await playsequence(playseq);
-                          toast.success("Robot Moviendose", {
+                          await deletesequence(item.name);
+                          toast.success("Sequence was deleted", {
                             position: "bottom-right",
                           });
+                          const nuevosequence = sequenceOptions.filter(
+                            (punto) => punto !== item
+                          );
+                          setSequenceOptions(nuevosequence);
                         } catch (error) {
                           toast.error(error.response.data.name, {
                             position: "bottom-right",
                           });
                         }
-                      }}
-                    />
-                  </div>
-                  <div className="pld">
-                    <div className="separacion-name">
-                      <b>{`${item.name}`}</b>
-                    </div>
-                    <div className="separacion-coordenada">
-                      {/* Filtra y muestra solo los movimientos no nulos */}
-                      {Object.values(item)
-                        .slice(1) // Ignora el primer valor (name) y toma el resto
-                        .filter((movement) => movement !== null)
-                        .map((movement, movementIndex, filteredMovements) => (
-                          <span key={movementIndex}>
-                            [{movement}]
-                            {movementIndex < filteredMovements.length - 1 &&
-                              filteredMovements[movementIndex + 1] !== null &&
-                              ", "}
-                          </span>
-                        ))}
-                    </div>
-                  </div>
-
-                  <div className="separacion-delete">
-                    <AiOutlineCloseCircle
-                      className="delete-punto"
-                      onClick={async () => {
-                        const confirmdelete = window.confirm(
-                          "Advertencia: Estás a punto de borrar permanentemente una secuencia. Esta acción no se puede deshacer. Por favor, asegúrate de que estás seleccionando la secuencia correcta para eliminar. ¿Estás seguro de que deseas proceder con la eliminación?"
-                        );
-                        if (confirmdelete === true) {
-                          try {
-                            await deletesequence(item.name);
-                            toast.success("Sequence was deleted", {
-                              position: "bottom-right",
-                            });
-                            const nuevosequence = sequenceOptions.filter(
-                              (punto) => punto !== item
-                            );
-                            setSequenceOptions(nuevosequence);
-                          } catch (error) {
-                            toast.error(error.response.data.name, {
-                              position: "bottom-right",
-                            });
-                          }
-                        }
-                      }}
-                    />
-                  </div>
-                </li>
-              ))
-            ) : (
-              <li className="img-none">
-                No sequences found.
-                <div className="no-data-img">
-                  <img
-                    src={require(`../images/no-data.png`)}
-                    title="No se encontraron secuencias en la base de datos"
-                    alt="no-data"
-                    width={"100px"}
+                      }
+                    }}
                   />
                 </div>
               </li>
-            )}
+            ))
+          ) : (
+            <li className="img-none">
+              No sequences found.
+              <div className="no-data-img">
+                <img
+                  src={require(`../images/no-data.png`)}
+                  title="No se encontraron secuencias en la base de datos"
+                  alt="no-data"
+                  width={"100px"}
+                />
+              </div>
+            </li>
+          )}
         </ul>
       </div>
     </>
