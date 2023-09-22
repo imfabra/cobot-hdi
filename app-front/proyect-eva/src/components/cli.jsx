@@ -1,8 +1,61 @@
 import "../stylesheets/cli.css";
-import { getpoint, playpoint, setHome } from "../api/cobot.api";
+import { playpoint, setHome } from "../api/cobot.api";
 import { toast } from "react-hot-toast";
+import React, { useState, useEffect } from 'react';
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root');
+
+const customStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  content: {
+    background: 'transparent',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    width: '300px',
+    margin: 'auto',
+  },
+};
 
 const Cli = (props) => {
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(10);
+
+  const openModal = () => {
+    setModalIsOpen(true);
+    setRemainingTime(10);
+  }
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  }
+
+  useEffect(() => {
+    let timer;
+
+    if (modalIsOpen) {
+      timer = setInterval(() => {
+        if (remainingTime > 0) {
+          setRemainingTime((prevRemainingTime) => prevRemainingTime - 1);
+        } else {
+          clearInterval(timer);
+          closeModal();
+        }
+      }, 1000);
+    } else {
+      clearInterval(timer);
+    }
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [modalIsOpen, remainingTime]);
+
+
   const comandoHome = {
     command: "cli",
     type: "home",
@@ -36,20 +89,6 @@ const Cli = (props) => {
       );
       if (confirmar) {
         const response = await setHome(comandoHome);
-        toast(
-          `PORFAVOR ESPERA QUE TERMINE DE SETTEARME.
-                Att:  ARIA ^_^`,
-          {
-            icon: "⏳",
-            style: {
-              fontSize: "1.2rem",
-              borderRadius: "10px",
-              background: "#333",
-              color: "#fff",
-            },
-            duration: 10000,
-          }
-        );
 
         console.log(response);
       }
@@ -62,7 +101,7 @@ const Cli = (props) => {
       const res = await playpoint(enviarHome);
       console.log(enviarHome);
       console.log(res);
-      toast.success(`Robot en movimiento  ->  home`, {
+      toast.success(`Robot en movimiento - home`, {
         position: "bottom-right",
       });
     } catch (error) {
@@ -73,7 +112,7 @@ const Cli = (props) => {
     try {
       const res = await playpoint(enviarInter);
       console.log(res);
-      toast.success(`Robot en movimiento  ->  inter`, {
+      toast.success(`Robot en movimiento - inter`, {
         position: "bottom-right",
       });
     } catch (error) {
@@ -84,7 +123,7 @@ const Cli = (props) => {
     try {
       const res = await playpoint(enviarGripper);
       console.log(res);
-      toast.success(`Robot en movimiento  ->  gripper`, {
+      toast.success(`Movimiento - Gripper`, {
         position: "bottom-right",
       });
     } catch (error) {
@@ -95,7 +134,7 @@ const Cli = (props) => {
     try {
       const res = await playpoint(enviarP0);
       console.log(res);
-      toast.success(`Robot en movimiento  ->  p0`, {
+      toast.success(`Robot en movimiento - p0`, {
         position: "bottom-right",
       });
     } catch (error) {
@@ -103,11 +142,30 @@ const Cli = (props) => {
     }
   };
 
+
+
+
+
+
   return (
     <div className="card-cli">
-      <button className="setteo" onClick={sett}>
+      <button className="setteo" onClick={()=>{
+        sett()
+        openModal()
+      }}>
         Sett
       </button>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Ejemplo Modal"
+        style={customStyles}
+        shouldCloseOnOverlayClick={false} // Evitar que el modal se cierre al hacer clic en el overlay
+      >
+        <h2>POR FAVOR ESPERA QUE TERMINE DE SETTEARME.
+            Att:  Aria</h2>
+        <p>Tiempo restante: {remainingTime} segundos</p>
+      </Modal>
       <div className="accion-rapida" >
         <button onClick={home}>Home</button>
         <button onClick={inter}>Inter</button>

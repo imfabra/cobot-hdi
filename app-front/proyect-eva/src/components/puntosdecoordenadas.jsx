@@ -34,6 +34,10 @@ import { toast } from "react-hot-toast";
 import Cli from "./cli";
 import { useForm } from "react-hook-form";
 import { ReactSortable } from "react-sortablejs";
+import Modal from 'react-modal';
+
+// Establece la aplicación de React en la raíz del documento.
+Modal.setAppElement('#root');
 
 function Pcoordenadas(prop) {
   const {
