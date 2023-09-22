@@ -34,7 +34,7 @@ const movimientosApi = axios.create({
   baseURL:`${urlpp}edit/movement`
 })
 export const getAllMovements = () => movimientosApi.get('/')
-export const geMovement = (id) => movimientosApi.get(`/${id}`)
+export const getMovement = (id) => movimientosApi.get(`/${id}/`)
 export const createMovements = (movement) => movimientosApi.post('/', movement)
 export const deleteMovements = (name) => movimientosApi.delete(`/${name}/`)
 export const updateMovement = (id, movement) => movimientosApi.put(`/${id}/`, movement);
@@ -45,6 +45,8 @@ const sequenceApi = axios.create({
   baseURL:`${urlpp}edit/sequence`
 })
 export const getAllSequences = () => sequenceApi.get('/')
+export const getSequence = (id) => sequenceApi.get(`/${id}/`)
 export const createsequence = (sequence) => sequenceApi.post('/', sequence)
 export const deletesequence = (name) => sequenceApi.delete(`/${name}/`)
+export const updateSequence = (id, sequence) => sequenceApi.put(`/${id}/`, sequence);
 

@@ -26,7 +26,9 @@ import {
   playmovement,
   playsequence,
   manejoMotor,
-  geMovement,
+  getMovement,
+  getSequence,
+  updateSequence,
 } from "../api/cobot.api";
 import { toast } from "react-hot-toast";
 import Cli from "./cli";
@@ -624,7 +626,6 @@ function Pcoordenadas(prop) {
                 }}
               />
 
-          
               <Button
                 text="Delete Point"
                 onClick={async () => {
@@ -666,7 +667,7 @@ function Pcoordenadas(prop) {
       <div className="container-card">
         <h2 className="titulo-card">Create Sequences</h2>
         <div className="container-scroll">
-          <ul className="container-li">
+          <ul className="container-li" setSequenceName>
             <div className="nombrar">
               <label>Nombrar sequence:</label>
 
@@ -768,7 +769,7 @@ function Pcoordenadas(prop) {
                     if (parsedMovement && parsedMovement.name) {
                       setCurrentMovement(parsedMovement);
                       /* console.log(parsedMovement.name); */
-                      const { data } = await geMovement(parsedMovement.name);
+                      const { data } = await getMovement(parsedMovement.name);
                       /* console.log(data); */
                       setNameList(data.name);
 
@@ -886,7 +887,7 @@ function Pcoordenadas(prop) {
                       toast.success("Robot Moviendose", {
                         position: "bottom-right",
                       });
-                     /*  console.log(enviarmovement); */
+                      /*  console.log(enviarmovement); */
                     } catch (error) {
                       toast.error(error.response.data.name, {
                         position: "bottom-right",
@@ -930,6 +931,41 @@ function Pcoordenadas(prop) {
                 }}
               />
             </div>
+            <div>
+              <Button
+                text="Update Sequence"
+                onClick={async () => {
+                  setSequenceName("");
+                  setSequenceName(sequenceName);
+                  console.log(movementsList);
+                  const nuevoObjeto = {
+                    name: sequenceName,
+                    movement1: "",
+                    movement2: "",
+                    movement3: "",
+                    movement4: "",
+                    movement5: "",
+                  };
+                  for (let i = 0; i < movementsList.length; i++) {
+                    if (movementsList[i] && movementsList[i].name) {
+                      nuevoObjeto["movement" + (i + 1)] = movementsList[i].name;
+                    }
+                  }
+                  console.log(`sequencename: ${sequenceName}`);
+                  try {
+                    const res = await updateSequence(sequenceName, nuevoObjeto);
+                    getAllSequences();
+                    console.log(res);
+                    toast.success("Se actualizo sequence");
+                  } catch (error) {
+                    toast.error(error.response.data.name);
+                  }
+
+                  console.log(`Objeto: ${JSON.stringify(nuevoObjeto)}`);
+                }}
+                Update
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -941,11 +977,58 @@ function Pcoordenadas(prop) {
             sequenceOptions.map((item, index) => (
               <li
                 className="lista-li li-grandes li-click"
-                onClick={() => {
-                  /* movementsList(JSON.stringify(item)) */
-                  console.log(`Click en ${JSON.stringify(item)}`);
+                onClick={async () => {
+                  console.log(`Name: ${JSON.stringify(item.name)}`);
+                  /* console.log(`Click en ${JSON.stringify(item)}`);
+                  console.log(item.name); */
+                  const { data } = await getSequence(item.name);
+                  setSequenceName(item.name); // Establece el valor del input con la cadena de texto de data.sequenceName
+                  console.log(`data: ${JSON.stringify(data)}`);
+                  const movement1 =
+                    item.movement1 !== null
+                      ? await getMovement(item.movement1)
+                      : null;
+                  const movement2 =
+                    item.movement2 !== null
+                      ? await getMovement(item.movement2)
+                      : null;
+                  const movement3 =
+                    item.movement3 !== null
+                      ? await getMovement(item.movement3)
+                      : null;
+                  const movement4 =
+                    item.movement4 !== null
+                      ? await getMovement(item.movement4)
+                      : null;
+                  const movement5 =
+                    item.movement5 !== null
+                      ? await getMovement(item.movement5)
+                      : null;
+
+                  const movementList = [];
+
+                  if (movement1 !== null) {
+                    movementList.push(movement1.data);
+                  }
+
+                  if (movement2 !== null) {
+                    movementList.push(movement2.data);
+                  }
+
+                  if (movement3 !== null) {
+                    movementList.push(movement3.data);
+                  }
+
+                  if (movement4 !== null) {
+                    movementList.push(movement4.data);
+                  }
+
+                  if (movement5 !== null) {
+                    movementList.push(movement5.data);
+                  }
+
+                  setMovementsList(movementList);
                 }}
-                
                 key={index}
               >
                 <div className="separacion-play">

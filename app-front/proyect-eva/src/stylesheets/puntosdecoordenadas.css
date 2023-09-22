@@ -149,8 +149,6 @@ input.escribirname.input-coordenada {
   flex-direction: column;
   justify-content: space-between;
   height: 1000px;
-  overflow-y: auto; /* Añade un scroll vertical cuando sea necesario */
-  overflow-x: hidden;
 }
 .lista-li {
   display: flex;
@@ -180,7 +178,7 @@ input.escribirname.input-coordenada {
 
 .footer-card-select {
   width: 100%;
-  height: 150px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -21,3 +21,18 @@ button:hover{
   background-color: rgba(0, 0, 0, 0.732);
   cursor: pointer;
 }
+.setteo{
+  background-color: tomato  !important;
+}
+.accion-rapida{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.accion-rapida button{
+  text-align: center;
+  width: 100%;
+}
