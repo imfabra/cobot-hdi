@@ -81,7 +81,8 @@ header{
   margin-left: 25px;
 }
 .footer{
-  background-color: rgb(190, 190, 190);
+  color: white;
+  background-color: rgb(0, 39, 72);
   margin-top: 40px;
   display: flex;
   justify-content: space-around;

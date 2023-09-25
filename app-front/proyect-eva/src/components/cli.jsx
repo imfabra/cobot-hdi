@@ -1,38 +1,37 @@
 import "../stylesheets/cli.css";
 import { playpoint, setHome } from "../api/cobot.api";
 import { toast } from "react-hot-toast";
-import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
 
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
 
 const customStyles = {
   overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
   },
   content: {
-    background: 'transparent',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    width: '300px',
-    margin: 'auto',
+    background: "rgba(0, 0, 0, 0.6)",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    width: "80%",
+    margin: "auto",
   },
 };
 
 const Cli = (props) => {
-
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(10);
+  const [remainingTime, setRemainingTime] = useState(25);
 
   const openModal = () => {
     setModalIsOpen(true);
-    setRemainingTime(10);
-  }
+    setRemainingTime(25);
+  };
 
   const closeModal = () => {
     setModalIsOpen(false);
-  }
+  };
 
   useEffect(() => {
     let timer;
@@ -55,7 +54,6 @@ const Cli = (props) => {
     };
   }, [modalIsOpen, remainingTime]);
 
-
   const comandoHome = {
     command: "cli",
     type: "home",
@@ -75,7 +73,7 @@ const Cli = (props) => {
   const enviarGripper = {
     command: "play",
     type: "movement",
-    name: "gripA",
+    name: "griA",
   };
   const enviarInter = {
     command: "play",
@@ -142,17 +140,15 @@ const Cli = (props) => {
     }
   };
 
-
-
-
-
-
   return (
     <div className="card-cli">
-      <button className="setteo" onClick={()=>{
-        sett()
-        openModal()
-      }}>
+      <button
+        className="setteo"
+        onClick={() => {
+          sett();
+          openModal();
+        }}
+      >
         Sett
       </button>
       <Modal
@@ -162,11 +158,12 @@ const Cli = (props) => {
         style={customStyles}
         shouldCloseOnOverlayClick={false} // Evitar que el modal se cierre al hacer clic en el overlay
       >
-        <h2>POR FAVOR ESPERA QUE TERMINE DE SETTEARME.
-            Att:  Aria</h2>
-        <p>Tiempo restante: {remainingTime} segundos</p>
+        <div className="contenido-modal">
+          <h2>POR FAVOR ESPERA QUE TERMINE DE SETTEARME. Att: ARIA <img src="../images/logo-hdi-blanco-espanol-05.png" alt="logo" /> </h2>
+          <p>Tiempo restante: {remainingTime} segundos</p>
+        </div>
       </Modal>
-      <div className="accion-rapida" >
+      <div className="accion-rapida">
         <button onClick={home}>Home</button>
         <button onClick={inter}>Inter</button>
         <button onClick={gripper}>Gripper</button>
