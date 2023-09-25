@@ -93,11 +93,11 @@ class CobotTasks:
             if(data[1] == True):
                 # self.bt.run("C")
                 self.gripper.gripper_cli("1")
-                sleep(2)
+                sleep(3)
             elif(data[1] == False):
                 # self.bt.run("A")
                 self.gripper.gripper_cli("1")
-                sleep(2)
+                sleep(3)
                 
             print("Ejecutar Gripper A: ", data[1])
         print("----------------------------------------")
