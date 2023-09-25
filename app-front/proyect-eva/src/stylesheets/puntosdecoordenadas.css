@@ -87,6 +87,9 @@ input.escribirname.input-coordenada {
   display: flex;
 }
 .contenedor-refesh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   /* background-color: red; */
   font-weight: bold;
   font-size: 1.2rem;
@@ -94,7 +97,6 @@ input.escribirname.input-coordenada {
 .contenedor-refesh:hover {
   background-color: #fd7e7e;
   border-radius: 5px;
-  box-shadow: 0 0 5px red;
   cursor: pointer;
 }
 .img-none {
@@ -175,6 +177,12 @@ input.escribirname.input-coordenada {
   min-width: 263px;
   font-size: 1rem;
 }
+.li-grandes:active{
+  background-color: hsla(0, 0%, 0%, 0.6);
+}
+
+
+
 .separacion-borrarpunto {
   display: flex;
 }

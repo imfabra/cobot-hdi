@@ -127,7 +127,7 @@ function Pcoordenadas(prop) {
   const actualizandoPunto = async () => {
     if (currentPunto) {
       try {
-        const res = await updatePoint(currentPunto.name, watch());
+        const res = await updatePoint(watch("name"), watch());
         const respuespuntos = await getAllPoints();
         setpointsOptions(respuespuntos.data);
 
@@ -202,8 +202,10 @@ function Pcoordenadas(prop) {
     if (sequenceName !== "") {
       try {
         const sequence = new Sequence(sequenceName, movementsList);
-        console.log(`sequence: ${JSON.stringify(sequence)}`);
         const response = await createsequence(sequence);
+        toast.success("created sequence", { position: "bottom-right" });
+        setSequenceName("");
+        setMovementsList([]);
         if (response.data) {
           setSequenceOptions([...sequenceOptions, response.data]);
         }
@@ -415,7 +417,7 @@ function Pcoordenadas(prop) {
                   if (confirmDelete) {
                     try {
                       await deletePoint(currentPunto.name);
-                      toast.success("Point was deleted", {
+                      toast.success(`${currentPunto.name} was deleted`, {
                         position: "bottom-right",
                       });
                       const nuevospointsOptions = pointsOptions.filter(
@@ -458,13 +460,13 @@ function Pcoordenadas(prop) {
                   }}
                 />
               </div>
-              <div className="contenedor-refesh">
-                <AiOutlineDelete
-                  onClick={() => {
-                    setPuntosList([]);
-                  }}
-                />
-              </div>
+              <AiOutlineDelete
+                className="contenedor-refesh"
+                onClick={() => {
+                  setPuntosList([]);
+                  setNameList("");
+                }}
+              />
             </div>
             <div className="active-gripper">
               <label htmlFor="">Gripper </label>
@@ -640,7 +642,7 @@ function Pcoordenadas(prop) {
                     if (confirmDelete) {
                       try {
                         await deletePoint(currentPunto.name);
-                        toast.success("Point was deleted", {
+                        toast.success(`${currentPunto.name} was deleted`, {
                           position: "bottom-right",
                         });
                         const nuevospointsOptions = pointsOptions.filter(
@@ -673,9 +675,10 @@ function Pcoordenadas(prop) {
         <div className="container-scroll">
           <ul className="container-li" setSequenceName>
             <div className="nombrar">
-              <label>Nombrar sequence:</label>
+              <label>Name sequence:</label>
 
               <input
+                value={sequenceName}
                 type="text"
                 required
                 autoComplete="off"
@@ -686,20 +689,20 @@ function Pcoordenadas(prop) {
                   setSequenceName(e.target.value);
                 }}
               />
-              <button
+
+              <AiOutlineDelete
+                className="contenedor-refesh"
                 onClick={() => {
-                  console.log("borrando");
+                  setMovementsList([]);
+                  setSequenceName("");
                 }}
-              >
-                Delete all
-              </button>
+              />
             </div>
             <ReactSortable
               list={movementsList}
               setList={setMovementsList}
               className="flex-center-li"
             >
-
               {Array.isArray(movementsList) && movementsList.length > 0 ? (
                 movementsList.map((p, index) => (
                   <li className="lista-li" key={index}>
@@ -947,43 +950,52 @@ function Pcoordenadas(prop) {
               <Button
                 text="Update Sequence"
                 onClick={async () => {
-                  setSequenceName("");
-                  setSequenceName(sequenceName);
-                  console.log(`MovementList: ${JSON.stringify(movementsList)}`);
-                  const nuevoObjeto = {
-                    name: sequenceName,
-                    movement1: "",
-                    movement2: "",
-                    movement3: "",
-                    movement4: "",
-                    movement5: "",
-                    movement6: "",
-                    movement7: "",
-                    movement8: "",
-                    movement9: "",
-                    movement10: "",
-                    movement11: "",
-                    movement12: "",
-                    movement13: "",
-                    movement14: "",
-                    movement15: "",
-                  };
-                  for (let i = 0; i < movementsList.length; i++) {
-                    if (movementsList[i] && movementsList[i].name) {
-                      nuevoObjeto["movement" + (i + 1)] = movementsList[i].name;
+                  if (currentMovement) {
+                    const nuevoObjeto = {
+                      name: sequenceName,
+                      movement1: "",
+                      movement2: "",
+                      movement3: "",
+                      movement4: "",
+                      movement5: "",
+                      movement6: "",
+                      movement7: "",
+                      movement8: "",
+                      movement9: "",
+                      movement10: "",
+                      movement11: "",
+                      movement12: "",
+                      movement13: "",
+                      movement14: "",
+                      movement15: "",
+                    };
+                    for (let i = 0; i < movementsList.length; i++) {
+                      if (movementsList[i] && movementsList[i].name) {
+                        nuevoObjeto["movement" + (i + 1)] =
+                          movementsList[i].name;
+                      }
                     }
+                    try {
+                      const res = await updateSequence(
+                        sequenceName,
+                        nuevoObjeto
+                      );
+                      const ressequence = await getAllSequences();
+                      setSequenceOptions(ressequence.data);
+                      console.log(res);
+                      toast.success("Se actualizo sequence", {
+                        position: "bottom-right",
+                      });
+                    } catch (error) {
+                      toast.error(error.response.data.name, {
+                        position: "bottom-right",
+                      });
+                    }
+                  } else {
+                    toast.error("Selecione una sequence", {
+                      position: "bottom-right",
+                    });
                   }
-                  console.log(`sequencename: ${sequenceName}`);
-                  try {
-                    const res = await updateSequence(sequenceName, nuevoObjeto);
-                    getAllSequences();
-                    console.log(res);
-                    toast.success("Se actualizo sequence");
-                  } catch (error) {
-                    toast.error(error.response.data.name);
-                  }
-
-                  console.log(`NuevoObjeto: ${JSON.stringify(nuevoObjeto)}`);
                 }}
                 Update
               />
@@ -1000,12 +1012,14 @@ function Pcoordenadas(prop) {
               <li
                 className="lista-li li-grandes li-click"
                 onClick={async () => {
-                  console.log(`Name: ${JSON.stringify(item.name)}`);
                   /* console.log(`Click en ${JSON.stringify(item)}`);
                   console.log(item.name); */
-                  const { data } = await getSequence(item.name);
+                  await getSequence(item.name);
                   setSequenceName(item.name); // Establece el valor del input con la cadena de texto de data.sequenceName
-                  console.log(`data: ${JSON.stringify(data)}`);
+                  toast(`[ ${item.name} ] selected`, {
+                    position: "bottom-right",
+                  });
+
                   const movement1 =
                     item.movement1 !== null
                       ? await getMovement(item.movement1)
@@ -1026,7 +1040,7 @@ function Pcoordenadas(prop) {
                     item.movement5 !== null
                       ? await getMovement(item.movement5)
                       : null;
-                  const movement6 =
+                  /* const movement6 =
                     item.movement6 !== null
                       ? await getMovement(item.movement6)
                       : null;
@@ -1065,7 +1079,7 @@ function Pcoordenadas(prop) {
                   const movement15 =
                     item.movement15 !== null
                       ? await getMovement(item.movement15)
-                      : null;
+                      : null; */
 
                   const movementList = [];
 
@@ -1088,7 +1102,7 @@ function Pcoordenadas(prop) {
                   if (movement5 !== null) {
                     movementList.push(movement5.data);
                   }
-                  if (movement6 !== null) {
+                  /* if (movement6 !== null) {
                     movementList.push(movement6.data);
                   }
                   if (movement7 !== null) {
@@ -1117,7 +1131,7 @@ function Pcoordenadas(prop) {
                   }
                   if (movement15 !== null) {
                     movementList.push(movement15.data);
-                  }
+                  } */
                   setMovementsList(movementList);
                 }}
                 key={index}
@@ -1174,7 +1188,7 @@ function Pcoordenadas(prop) {
                       if (confirmdelete === true) {
                         try {
                           await deletesequence(item.name);
-                          toast.success("Sequence was deleted", {
+                          toast.success(`${item.name} was deleted`, {
                             position: "bottom-right",
                           });
                           const nuevosequence = sequenceOptions.filter(

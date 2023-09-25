@@ -145,14 +145,16 @@ const Cli = (props) => {
 
   return (
     <div className="card-cli">
-      <button
-        className="seteo"
+      <div className="contenedor-seteo">
+      <button className="btn-seteo seteo"
         onClick={() => {
           set();
         }}
       >
         Set
       </button>
+
+      </div>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}

@@ -25,6 +25,7 @@ button:hover {
   cursor: pointer;
 }
 .seteo {
+  width: 95%;
   background-color: tomato !important;
 }
 .accion-rapida {
@@ -33,6 +34,11 @@ button:hover {
   gap: 10px;
   justify-content: center;
   align-items: center;
+}
+.contenedor-seteo{
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .accion-rapida button {
