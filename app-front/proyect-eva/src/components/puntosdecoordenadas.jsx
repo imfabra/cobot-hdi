@@ -1026,7 +1026,7 @@ function Pcoordenadas(prop) {
                     item.movement5 !== null
                       ? await getMovement(item.movement5)
                       : null;
-                  /* const movement6 =
+                  const movement6 =
                     item.movement6 !== null
                       ? await getMovement(item.movement6)
                       : null;
@@ -1065,7 +1065,7 @@ function Pcoordenadas(prop) {
                   const movement15 =
                     item.movement15 !== null
                       ? await getMovement(item.movement15)
-                      : null; */
+                      : null;
 
                   const movementList = [];
 
@@ -1088,7 +1088,7 @@ function Pcoordenadas(prop) {
                   if (movement5 !== null) {
                     movementList.push(movement5.data);
                   }
-                  /* if (movement6 !== null) {
+                  if (movement6 !== null) {
                     movementList.push(movement6.data);
                   }
                   if (movement7 !== null) {
@@ -1117,7 +1117,7 @@ function Pcoordenadas(prop) {
                   }
                   if (movement15 !== null) {
                     movementList.push(movement15.data);
-                  } */
+                  }
                   setMovementsList(movementList);
                 }}
                 key={index}
