@@ -11,7 +11,8 @@ const customStyles = {
     backgroundColor: "rgba(0, 0, 0, 0.6)",
   },
   content: {
-    background: "rgba(0, 0, 0, 0.6)",
+    paddingTop: "200px",
+    background: "rgba(0, 0, 0, 0.4)",
     color: "white",
     border: "none",
     borderRadius: "8px",
@@ -159,7 +160,8 @@ const Cli = (props) => {
         shouldCloseOnOverlayClick={false} // Evitar que el modal se cierre al hacer clic en el overlay
       >
         <div className="contenido-modal">
-          <h2>POR FAVOR ESPERA QUE TERMINE DE SETTEARME. Att: ARIA <img src="../images/logo-hdi-blanco-espanol-05.png" alt="logo" /> </h2>
+          <h2>POR FAVOR ESPERA QUE TERMINE DE SETTEARME. </h2>
+          <h4 className="att" >Att: ARIA</h4>
           <p>Tiempo restante: {remainingTime} segundos</p>
         </div>
       </Modal>

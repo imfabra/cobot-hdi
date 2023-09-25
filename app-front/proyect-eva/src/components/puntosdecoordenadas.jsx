@@ -941,7 +941,7 @@ function Pcoordenadas(prop) {
                 onClick={async () => {
                   setSequenceName("");
                   setSequenceName(sequenceName);
-                  console.log(movementsList);
+                  console.log(`MovementList: ${JSON.stringify(movementsList)}`);
                   const nuevoObjeto = {
                     name: sequenceName,
                     movement1: "",
@@ -975,7 +975,7 @@ function Pcoordenadas(prop) {
                     toast.error(error.response.data.name);
                   }
 
-                  console.log(`Objeto: ${JSON.stringify(nuevoObjeto)}`);
+                  console.log(`NuevoObjeto: ${JSON.stringify(nuevoObjeto)}`);
                 }}
                 Update
               />
@@ -1018,6 +1018,46 @@ function Pcoordenadas(prop) {
                     item.movement5 !== null
                       ? await getMovement(item.movement5)
                       : null;
+                  const movement6 =
+                    item.movement6 !== null
+                      ? await getMovement(item.movement6)
+                      : null;
+                  const movement7 =
+                    item.movement7 !== null
+                      ? await getMovement(item.movement7)
+                      : null;
+                  const movement8 =
+                    item.movement8 !== null
+                      ? await getMovement(item.movement8)
+                      : null;
+                  const movement9 =
+                    item.movement9 !== null
+                      ? await getMovement(item.movement9)
+                      : null;
+                  const movement10 =
+                    item.movement10 !== null
+                      ? await getMovement(item.movement10)
+                      : null;
+                  const movement11 =
+                    item.movement11 !== null
+                      ? await getMovement(item.movement11)
+                      : null;
+                  const movement12 =
+                    item.movement12 !== null
+                      ? await getMovement(item.movement12)
+                      : null;
+                  const movement13 =
+                    item.movement13 !== null
+                      ? await getMovement(item.movement13)
+                      : null;
+                  const movement14 =
+                    item.movement14 !== null
+                      ? await getMovement(item.movement14)
+                      : null;
+                  const movement15 =
+                    item.movement15 !== null
+                      ? await getMovement(item.movement15)
+                      : null;
 
                   const movementList = [];
 
@@ -1040,7 +1080,36 @@ function Pcoordenadas(prop) {
                   if (movement5 !== null) {
                     movementList.push(movement5.data);
                   }
-
+                  if (movement6 !== null) {
+                    movementList.push(movement6.data);
+                  }
+                  if (movement7 !== null) {
+                    movementList.push(movement7.data);
+                  }
+                  if (movement8 !== null) {
+                    movementList.push(movement8.data);
+                  }
+                  if (movement9 !== null) {
+                    movementList.push(movement9.data);
+                  }
+                  if (movement10 !== null) {
+                    movementList.push(movement10.data);
+                  }
+                  if (movement11 !== null) {
+                    movementList.push(movement11.data);
+                  }
+                  if (movement12 !== null) {
+                    movementList.push(movement12.data);
+                  }
+                  if (movement13 !== null) {
+                    movementList.push(movement13.data);
+                  }
+                  if (movement14 !== null) {
+                    movementList.push(movement14.data);
+                  }
+                  if (movement15 !== null) {
+                    movementList.push(movement15.data);
+                  }
                   setMovementsList(movementList);
                 }}
                 key={index}
