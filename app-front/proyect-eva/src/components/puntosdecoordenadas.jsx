@@ -248,10 +248,9 @@ function Pcoordenadas(prop) {
         setValue("motor5_angle", res.data.motor5_angle);
       }
 
-      toast.success(
-        `Motores ${newActiveState ? "encendidos" : "apagados"}`,
-        { position: "bottom-right" }
-      );
+      toast.success(`Motores ${newActiveState ? "encendidos" : "apagados"}`, {
+        position: "bottom-right",
+      });
       if (newActiveState) {
         console.log("probando esta condicion...");
       }
@@ -590,57 +589,52 @@ function Pcoordenadas(prop) {
               <Button
                 text="Update Movement"
                 onClick={async () => {
-                  if(currentMovement){
-                    
-                  
-                  var objetoResultado = {};
-
-                  puntosList.forEach(function (objeto, indice) {
-                    var clave = "point" + (indice + 1);
-                    objetoResultado[clave] = objeto.name;
-                  });
-
-                  // Obtén la lista de puntos eliminados
-                  const puntosEliminados = Object.keys(currentMovement)
-                    .filter((key) => key.startsWith("point"))
-                    .filter((key) => !objetoResultado[key]);
-
-                  // Establece los puntos eliminados como null
-                  puntosEliminados.forEach((punto) => {
-                    objetoResultado[punto] = null;
-                  });
-
                   if (currentMovement) {
-                    const requestData = {
-                      name: currentMovement.name,
-                      gripper: gri,
-                      ...objetoResultado,
-                    };
-                    /* console.log(`requestData: ${JSON.stringify(requestData)}`); */
-                    const res = await updateMovement(
-                      currentMovement.name,
-                      requestData
-                    );
-                    /* console.log(res); */
-                    const movementsres = await getAllMovements();
-                    setMovementOptions(movementsres.data);
-                    toast.success(
-                      `${currentMovement.name} ha sido actualizado`
-                    );
+                    var objetoResultado = {};
+
+                    puntosList.forEach(function (objeto, indice) {
+                      var clave = "point" + (indice + 1);
+                      objetoResultado[clave] = objeto.name;
+                    });
+
+                    // Obtén la lista de puntos eliminados
+                    const puntosEliminados = Object.keys(currentMovement)
+                      .filter((key) => key.startsWith("point"))
+                      .filter((key) => !objetoResultado[key]);
+
+                    // Establece los puntos eliminados como null
+                    puntosEliminados.forEach((punto) => {
+                      objetoResultado[punto] = null;
+                    });
+
+                    if (currentMovement) {
+                      const requestData = {
+                        name: currentMovement.name,
+                        gripper: gri,
+                        ...objetoResultado,
+                      };
+                      /* console.log(`requestData: ${JSON.stringify(requestData)}`); */
+                      const res = await updateMovement(
+                        currentMovement.name,
+                        requestData
+                      );
+                      /* console.log(res); */
+                      const movementsres = await getAllMovements();
+                      setMovementOptions(movementsres.data);
+                      toast.success(
+                        `${currentMovement.name} ha sido actualizado`
+                      );
+                    } else {
+                      toast.error("Verifica si hay elementos", {
+                        position: "bottom-right",
+                      });
+                    }
                   } else {
-                    toast.error("Verifica si hay elementos", {
+                    toast.error("select a movement", {
                       position: "bottom-right",
                     });
                   }
-                }
-                else{
-                  toast.error("select a movement", {
-                    position: "bottom-right",
-                  });
-
-                }
-                }
-              }
+                }}
               />
 
               <Button
@@ -1051,7 +1045,7 @@ function Pcoordenadas(prop) {
                     item.movement5 !== null
                       ? await getMovement(item.movement5)
                       : null;
-                  /* const movement6 =
+                  const movement6 =
                     item.movement6 !== null
                       ? await getMovement(item.movement6)
                       : null;
@@ -1089,8 +1083,48 @@ function Pcoordenadas(prop) {
                       : null;
                   const movement15 =
                     item.movement15 !== null
-                      ? await getMovement(item.movement15)
-                      : null; */
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement16 =
+                    item.movement16 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement17 =
+                    item.movement17 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement18 =
+                    item.movement18 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement19 =
+                    item.movement19 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement20 =
+                    item.movement20 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement21 =
+                    item.movement21 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement22 =
+                    item.movement22 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement23 =
+                    item.movement23 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement24 =
+                    item.movement24 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
+                  const movement25 =
+                    item.movement25 !== null
+                    ? await getMovement(item.movement15)
+                    : null;
 
                   const movementList = [];
 
@@ -1113,7 +1147,7 @@ function Pcoordenadas(prop) {
                   if (movement5 !== null) {
                     movementList.push(movement5.data);
                   }
-                  /* if (movement6 !== null) {
+                  if (movement6 !== null) {
                     movementList.push(movement6.data);
                   }
                   if (movement7 !== null) {
@@ -1142,7 +1176,37 @@ function Pcoordenadas(prop) {
                   }
                   if (movement15 !== null) {
                     movementList.push(movement15.data);
-                  } */
+                  }
+                  if (movement16 !== null) {
+                    movementList.push(movement16.data);
+                  }
+                  if (movement17 !== null) {
+                    movementList.push(movement17.data);
+                  }
+                  if (movement18 !== null) {
+                    movementList.push(movement18.data);
+                  }
+                  if (movement19 !== null) {
+                    movementList.push(movement19.data);
+                  }
+                  if (movement20!== null) {
+                    movementList.push(movement20.data);
+                  }
+                  if (movement21 !== null) {
+                    movementList.push(movement21.data);
+                  }
+                  if (movement22 !== null) {
+                    movementList.push(movement22.data);
+                  }
+                  if (movement23 !== null) {
+                    movementList.push(movement23.data);
+                  }
+                  if (movement24 !== null) {
+                    movementList.push(movement24.data);
+                  }
+                  if (movement25 !== null) {
+                    movementList.push(movement25.data);
+                  }
                   setMovementsList(movementList);
                 }}
                 key={index}
