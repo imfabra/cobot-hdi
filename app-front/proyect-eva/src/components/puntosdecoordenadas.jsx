@@ -138,7 +138,7 @@ function Pcoordenadas(prop) {
         toast.success(error.response.data.name, { position: "bottom-right" });
       }
     } else {
-      toast.error("Seleccione un punto", { position: "bottom-right" });
+      toast.error("select a point", { position: "bottom-right" });
     }
   };
   const moverpunto = async () => {
@@ -249,7 +249,7 @@ function Pcoordenadas(prop) {
       }
 
       toast.success(
-        `Motores ${newActiveState ? "encendidos" : "apagados"} con éxito.`,
+        `Motores ${newActiveState ? "encendidos" : "apagados"}`,
         { position: "bottom-right" }
       );
       if (newActiveState) {
@@ -590,6 +590,9 @@ function Pcoordenadas(prop) {
               <Button
                 text="Update Movement"
                 onClick={async () => {
+                  if(currentMovement){
+                    
+                  
                   var objetoResultado = {};
 
                   puntosList.forEach(function (objeto, indice) {
@@ -629,7 +632,15 @@ function Pcoordenadas(prop) {
                       position: "bottom-right",
                     });
                   }
-                }}
+                }
+                else{
+                  toast.error("select a movement", {
+                    position: "bottom-right",
+                  });
+
+                }
+                }
+              }
               />
 
               <Button
@@ -992,7 +1003,7 @@ function Pcoordenadas(prop) {
                       });
                     }
                   } else {
-                    toast.error("Selecione una sequence", {
+                    toast.error("select a sequence", {
                       position: "bottom-right",
                     });
                   }
