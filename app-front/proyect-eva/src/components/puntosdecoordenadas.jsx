@@ -34,10 +34,10 @@ import { toast } from "react-hot-toast";
 import Cli from "./cli";
 import { useForm } from "react-hook-form";
 import { ReactSortable } from "react-sortablejs";
-import Modal from 'react-modal';
+import Modal from "react-modal";
 
 // Establece la aplicación de React en la raíz del documento.
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
 
 function Pcoordenadas(prop) {
   const {
@@ -56,7 +56,7 @@ function Pcoordenadas(prop) {
   const [currentPunto, setCurrentPunto] = useState(undefined); //
 
   //movimientos
-  //lista de puntos
+  //lista de puntossetMovementsList
   const [puntosList, setPuntosList] = useState([]);
   //puntos del select
   const [movementOptions, setMovementOptions] = useState([]); //
@@ -193,7 +193,7 @@ function Pcoordenadas(prop) {
 
   function savePointsList() {
     if (currentMovement !== "") {
-      setMovementsList((m) => [...m, currentMovement]);
+      setMovementsList((valorAnterior) => [...valorAnterior, currentMovement]);
       /* console.log(currentMovement); */
     }
   }
@@ -686,12 +686,20 @@ function Pcoordenadas(prop) {
                   setSequenceName(e.target.value);
                 }}
               />
+              <button
+                onClick={() => {
+                  console.log("borrando");
+                }}
+              >
+                Delete all
+              </button>
             </div>
             <ReactSortable
               list={movementsList}
               setList={setMovementsList}
               className="flex-center-li"
             >
+
               {Array.isArray(movementsList) && movementsList.length > 0 ? (
                 movementsList.map((p, index) => (
                   <li className="lista-li" key={index}>
@@ -1018,7 +1026,7 @@ function Pcoordenadas(prop) {
                     item.movement5 !== null
                       ? await getMovement(item.movement5)
                       : null;
-                  const movement6 =
+                  /* const movement6 =
                     item.movement6 !== null
                       ? await getMovement(item.movement6)
                       : null;
@@ -1057,7 +1065,7 @@ function Pcoordenadas(prop) {
                   const movement15 =
                     item.movement15 !== null
                       ? await getMovement(item.movement15)
-                      : null;
+                      : null; */
 
                   const movementList = [];
 
@@ -1080,7 +1088,7 @@ function Pcoordenadas(prop) {
                   if (movement5 !== null) {
                     movementList.push(movement5.data);
                   }
-                  if (movement6 !== null) {
+                  /* if (movement6 !== null) {
                     movementList.push(movement6.data);
                   }
                   if (movement7 !== null) {
@@ -1109,7 +1117,7 @@ function Pcoordenadas(prop) {
                   }
                   if (movement15 !== null) {
                     movementList.push(movement15.data);
-                  }
+                  } */
                   setMovementsList(movementList);
                 }}
                 key={index}

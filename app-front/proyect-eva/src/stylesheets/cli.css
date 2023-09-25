@@ -3,11 +3,14 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  background-color: rgb(79, 79, 79);
+  background-color: rgb(65, 65, 65);
+  /* background: linear-gradient(rgb(31, 31, 31), rgb(65, 65, 65), rgb(31, 31, 31)); */
   border-radius: 16px;
   margin-right: 2px;
-  height: 470px;
+  height: 650px;
   width: 70px;
+  padding-top: 150px;
+  padding-bottom: 150px;
 }
 button {
   background-color: black;
@@ -21,7 +24,7 @@ button:hover {
   background-color: rgba(0, 0, 0, 0.732);
   cursor: pointer;
 }
-.setteo {
+.seteo {
   background-color: tomato !important;
 }
 .accion-rapida {

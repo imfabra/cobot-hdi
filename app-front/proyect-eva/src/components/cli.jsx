@@ -81,15 +81,17 @@ const Cli = (props) => {
     type: "point",
     name: "inter",
   };
-  const sett = async () => {
+  const set = async () => {
     try {
-      const confirmar = window.confirm(
-        "Advertencia: Estas a punto de Comenzar el Seteo del robot, asegurate de que los MOTORES esten ENCENDIDOS!!!"
-      );
-      if (confirmar) {
-        const response = await setHome(comandoHome);
-
-        console.log(response);
+      if (
+        window.confirm(
+          "Advertencia: Estas a punto de Comenzar el Seteo del robot, asegurate de que los MOTORES esten ENCENDIDOS!!!"
+        )
+      ) {
+        await setHome(comandoHome);
+        openModal();
+      } else {
+        toast.error(`set`, { position: "bottom-right" });
       }
     } catch (error) {
       toast.error(`${error}`, { position: "bottom-right" });
@@ -144,13 +146,12 @@ const Cli = (props) => {
   return (
     <div className="card-cli">
       <button
-        className="setteo"
+        className="seteo"
         onClick={() => {
-          sett();
-          openModal();
+          set();
         }}
       >
-        Sett
+        Set
       </button>
       <Modal
         isOpen={modalIsOpen}
@@ -160,8 +161,8 @@ const Cli = (props) => {
         shouldCloseOnOverlayClick={false} // Evitar que el modal se cierre al hacer clic en el overlay
       >
         <div className="contenido-modal">
-          <h2>POR FAVOR ESPERA QUE TERMINE DE SETTEARME. </h2>
-          <h4 className="att" >Att: ARIA</h4>
+          <h2>POR FAVOR ESPERA QUE TERMINE DE SETEARME. </h2>
+          <h4 className="att">Att: ARIA</h4>
           <p>Tiempo restante: {remainingTime} segundos</p>
         </div>
       </Modal>
