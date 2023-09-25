@@ -1,10 +1,11 @@
 #!/bin/bash
 # Iniciar redís
+sudo systemctl stop redis-server &
 redis-server
 
 # Iniciar Celery
-cd /ruta/a/tu/proyecto
-celery -A myapp worker -l info &
+cd /home/aria/Documentos/Dev/cobot-hdi-feature-api-Asynchronism/api-cobot
+celery -A api_cobot worker --loglevel=INFO --concurrency=1
 
 # Iniciar Django
 python manage.py runserver &
