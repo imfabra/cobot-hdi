@@ -949,6 +949,16 @@ function Pcoordenadas(prop) {
                     movement3: "",
                     movement4: "",
                     movement5: "",
+                    movement6: "",
+                    movement7: "",
+                    movement8: "",
+                    movement9: "",
+                    movement10: "",
+                    movement11: "",
+                    movement12: "",
+                    movement13: "",
+                    movement14: "",
+                    movement15: "",
                   };
                   for (let i = 0; i < movementsList.length; i++) {
                     if (movementsList[i] && movementsList[i].name) {

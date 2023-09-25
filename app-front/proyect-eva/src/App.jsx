@@ -52,13 +52,25 @@ function App() {
 
       <footer className="footer">
         <div className="footer-left">
-          Grupo HDI Colombia
-          {/* <img src={require("...")} alt="banco" /> */}
+          <a
+            href="https://grupohdi.com/nosotros/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {
+              <img
+                src={require("./images/logo-hdi-blanco-espanol-05.png")}
+                alt="banco"
+              />
+            }
+          </a>
         </div>
         <div className="footer-mid">
           <p>
             <span>
-              <b>designed by:</b></span>Grupo HDI
+              <b>designed by:</b>
+            </span>
+            Grupo HDI
           </p>
         </div>
         <div className="footer-rigth">
