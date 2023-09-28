@@ -37,7 +37,8 @@ class CobotTasks:
         speeds = [min_sp if min_sp > 4 else 3 for min_sp in aux_speeds]
         #speeds[1] = speeds[1]+(speeds[1]*0.10)
         speeds[0]= 20 if speeds[0]< 20 else speeds[0]
-        speeds[1]= 10 if speeds[1]<10 else speeds[1]
+        speeds[1]= 5 if speeds[1]<5 else speeds[1]
+        speeds[1]=speeds[1]-(speeds[1]*0.1)
         speeds[2]= 10 if speeds[2]<10 else speeds[2]
         speeds[3]= 10 if speeds[3]<10 else speeds[3]
         speeds[4]= 10 if speeds[4]<10 else speeds[4]
@@ -125,6 +126,9 @@ class CobotTasks:
         self.motors.motors_on()
         anglesOn = self.motors.get_angle_value(1)
         return anglesOn
+    
+    def read_arduino(self):
+        self.motors.read_to_arduino()
 
 cobottasks = CobotTasks()
 
@@ -138,6 +142,8 @@ def cli_tasks(cli):
         cobottasks.motors_off()
     elif cli == "motors_on":
         return json.dumps(cobottasks.motors_on())
+    elif cli == "read_arduino":
+        return json.dumps(cobottasks.read_arduino())
 
 @app.task
 def executor_tasks(command, type, da):

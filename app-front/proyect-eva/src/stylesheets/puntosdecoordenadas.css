@@ -87,9 +87,6 @@ input.escribirname.input-coordenada {
   display: flex;
 }
 .contenedor-refesh {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   /* background-color: red; */
   font-weight: bold;
   font-size: 1.2rem;
@@ -97,6 +94,7 @@ input.escribirname.input-coordenada {
 .contenedor-refesh:hover {
   background-color: #fd7e7e;
   border-radius: 5px;
+  box-shadow: 0 0 5px red;
   cursor: pointer;
 }
 .img-none {
@@ -136,8 +134,8 @@ input.escribirname.input-coordenada {
   align-items: center;
   justify-content: flex-start;
   list-style-type: none;
-  overflow-y: auto !important; /* Añade un scroll vertical cuando sea necesario */
-  overflow-x: hidden !important;
+  overflow-y: auto; /* Añade un scroll vertical cuando sea necesario */
+  overflow-x: hidden;
 }
 .conteiner-viewSequences {
   display: flex;
@@ -151,9 +149,6 @@ input.escribirname.input-coordenada {
   flex-direction: column;
   justify-content: space-between;
   height: 1000px;
-  overflow-y: auto !important; /* Añade un scroll vertical cuando sea necesario */
-  overflow-x: hidden !important;
-
 }
 .lista-li {
   display: flex;
@@ -177,12 +172,6 @@ input.escribirname.input-coordenada {
   min-width: 263px;
   font-size: 1rem;
 }
-.li-grandes:active{
-  background-color: hsla(0, 0%, 0%, 0.6);
-}
-
-
-
 .separacion-borrarpunto {
   display: flex;
 }

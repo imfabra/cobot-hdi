@@ -1,8 +1,13 @@
 from cobot.tasks import cli_tasks, executor_tasks
-import json
-
+from .modules.motors.rmdx_funtions import RMDX 
+from time import sleep
+import threading
+import serial
 class Cobot:
     def __init__(self):
+        # self.thread = None
+        # self.sensor_trama=[False, False, False, False, False, False]
+        self.motors=RMDX()
         pass
 
     # command: play
@@ -21,3 +26,22 @@ class Cobot:
             elif type == "motors_on":
                 x = cli_tasks.delay("motors_on").get()
                 return x
+            elif type == "read_arduino":
+                self.thread = threading.Thread(target=self.motors.read_to_arduino)
+                self.thread.start()
+
+    # def read_to_arduino(self):
+    #     try:
+    #         self.ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=None)
+    #         sensor_tramax = [False, False, False, False, False]
+    #         while self.run_read_arduino:
+    #             # ----- Abrir conexion serial con arduino ----
+    #             data = self.ser.readline().decode().strip()
+    #             aux = [True if c == "1" else False for c in data]
+    #             if len(aux) != 0:
+    #                 sensor_tramax = aux
+    #             self.sensor_trama = sensor_tramax
+    #             # print(self.sensor_trama)
+    #             sleep(0.001)
+    #     except:
+    #         print("Stop arduino")

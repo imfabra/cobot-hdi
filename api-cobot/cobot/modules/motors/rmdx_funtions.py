@@ -362,7 +362,9 @@ class RMDX:
                 if len(aux) != 0:
                     sensor_tramax = aux
                 self.sensor_trama = sensor_tramax
-                # print(self.sensor_trama)
+                #if self.sensor_trama[5] == True:
+                #   break
+                print(self.sensor_trama)
                 sleep(0.001)
         except:
             print("Stop arduino")

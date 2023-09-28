@@ -91,6 +91,9 @@ class PostCommandsView(APIView):
                 x = my_cobot.run_command(command, data_type)
                 print("En view data: ", x)
                 return Response(json.loads(x))
+            elif data_type=="read_arduino":
+                my_cobot.run_command(command, data_type)
+                return Response({"sensor":"start"})
             else:
                 return Response({"error": "Invalid data type."})
         else:
