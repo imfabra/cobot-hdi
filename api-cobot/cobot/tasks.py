@@ -21,8 +21,8 @@ class CobotTasks:
         self.expected_angles = [0.0]*5
 
     def _speed_angles(self,e_angles, vel=10):
-        timer_base = 1
-        angle_base = 23
+        timer_base = 1.25
+        angle_base = 25
         c_angles = self.motors.get_angle_value(0)
 
         full_angles = [round(abs((a)-(d)),1) for a, d in zip(self.motors.get_angle_value(0), e_angles)]
@@ -33,15 +33,34 @@ class CobotTasks:
 
         timer = (max_angle*timer_base)/angle_base
         timer = 1 if timer<1 else timer
+        
         aux_speeds = [round((v * angle / max_angle), 2) if max_angle !=0 else round((v * angle / 1), 2) for angle, v in zip(full_angles, vel)]
-        speeds = [min_sp if min_sp > 4 else 3 for min_sp in aux_speeds]
+        
+        if min(aux_speeds) <= 10 and max_angle <= 30:
+            print("Se aplica regularidad de velocidades")
+            aux_speeds[2] -= aux_speeds[2] * 0.30 
+            aux_speeds[1] += aux_speeds[1] * 0.50
+            #aux_speeds[1] += aux_speeds[1] * 0.50 
+            #for i in range(len(aux_speeds)):
+            #    if i in [0, 2, 3, 4]: 
+            #        aux_speeds[i] -= aux_speeds[i] * 0.50 
+            velocidad_minima = 10
+            velocidad_minima_motores = min(aux_speeds)
+            diferencia_velocidades = velocidad_minima - velocidad_minima_motores
+            porcent_incremento = diferencia_velocidades / velocidad_minima
+            speeds = [round(aux+(velocidad_minima*porcent_incremento),2) for aux in aux_speeds]
+        else:
+            speeds = aux_speeds
+        
+        #speeds[0]= 20 if speeds[0]< 20 else speeds[0]
         #speeds[1] = speeds[1]+(speeds[1]*0.10)
-        speeds[0]= 20 if speeds[0]< 20 else speeds[0]
-        speeds[1]= 5 if speeds[1]<5 else speeds[1]
-        speeds[1]=speeds[1]-(speeds[1]*0.1)
-        speeds[2]= 10 if speeds[2]<10 else speeds[2]
-        speeds[3]= 10 if speeds[3]<10 else speeds[3]
-        speeds[4]= 10 if speeds[4]<10 else speeds[4]
+        #speeds[1]= 5 if speeds[1]<5 else speeds[1]
+        #speeds[2]= 5 if speeds[2]<5 else speeds[2]
+        #if max_angle <= 30:
+        #    speeds[1]=speeds[1]+(speeds[1]*0.4)
+        #    speeds[2]=speeds[2]-(speeds[2]*0.60)
+        #speeds[3]= 10 if speeds[3]<10 else speeds[3]
+        #speeds[4]= 10 if speeds[4]<10 else speeds[4]
         print(f'''
             \r------- Velocidad Motores ------------
             \rAngulos actuales:  {c_angles},

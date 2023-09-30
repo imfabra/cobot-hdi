@@ -364,7 +364,7 @@ class RMDX:
                 self.sensor_trama = sensor_tramax
                 #if self.sensor_trama[5] == True:
                 #   break
-                print(self.sensor_trama)
+                #print(self.sensor_trama)
                 sleep(0.001)
         except:
             print("Stop arduino")
