@@ -13,6 +13,7 @@ class CobotTasks:
         self.motors=RMDX()
         self.motors.setup()
         self.motors.getMotorList()
+        
 
         self.bt=BT()
         self.gripper = Gripper()
@@ -21,8 +22,8 @@ class CobotTasks:
         self.expected_angles = [0.0]*5
 
     def _speed_angles(self,e_angles, vel=10):
-        timer_base = 1.5
-        angle_base = 25
+        timer_base = 1
+        angle_base = 23
         c_angles = self.motors.get_angle_value(0)
 
         full_angles = [round(abs((a)-(d)),1) for a, d in zip(self.motors.get_angle_value(0), e_angles)]
@@ -173,3 +174,8 @@ def executor_tasks(command, type, da):
         cobottasks.cobot_movements(command, type, da)
     elif type == "sequence":
         cobottasks.cobot_sequences(command, type, da)
+        
+@app.task
+def others_tasks():
+    cobottasks.motors_on()
+    

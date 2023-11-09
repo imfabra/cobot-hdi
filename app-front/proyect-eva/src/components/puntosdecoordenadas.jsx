@@ -3,15 +3,14 @@ import "../stylesheets/puntosdecoordenadas.css";
 import Button from "./button";
 import {
   AiOutlineCloseCircle,
-  AiOutlineDelete,
   AiOutlinePlayCircle,
+  AiOutlineClear,
 } from "react-icons/ai";
 import { ListaPuntos } from "../models/ListaPuntos";
 import { Sequence } from "../models/Sequence";
 import {
   getAllPoints,
   getpoint,
-  getAngles,
   updateMovement,
   createPoint,
   deletePoint,
@@ -35,11 +34,13 @@ import Cli from "./cli";
 import { useForm } from "react-hook-form";
 import { ReactSortable } from "react-sortablejs";
 import Modal from "react-modal";
+import { MoveMotor } from "./MoveMotor";
 
 // Establece la aplicación de React en la raíz del documento.
 Modal.setAppElement("#root");
 
-function Pcoordenadas(prop) {
+function Pcoordenadas({ theme }) {
+  console.log(theme);
   const {
     register,
     handleSubmit,
@@ -79,6 +80,7 @@ function Pcoordenadas(prop) {
   useEffect(() => {
     async function loadPointsAndMovements() {
       try {
+        console.log("error de 404 xd ");
         const pointsres = await getAllPoints();
         setpointsOptions(pointsres.data);
 
@@ -88,10 +90,12 @@ function Pcoordenadas(prop) {
         const sequencesres = await getAllSequences();
         setSequenceOptions(sequencesres.data);
       } catch (error) {
-        toast.error(error.response.data.name, { position: "bottom-right" });
+        toast.error(error.message, {
+          position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
+        });
       }
     }
-
     loadPointsAndMovements();
   }, []);
 
@@ -100,10 +104,22 @@ function Pcoordenadas(prop) {
       await createPoint(data);
       const respuespuntos = await getAllPoints();
       setpointsOptions(respuespuntos.data);
-      toast.success("Punto Creado", { position: "bottom-right" });
+      theme === "dark"
+        ? toast.success("Punto Creado", {
+            position: "bottom-right",
+            style: { backgroundColor: "#333", color: "#fff" },
+          })
+        : toast.success("Punto Creado", {
+            position: "bottom-right",
+            style: { backgroundColor: "#fff", color: "#000" },
+          });
+
       reset();
     } catch (error) {
-      toast.error(error.response.data.name, { position: "bottom-right" });
+      toast.error(error.message, {
+        position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
+      });
     }
   });
 
@@ -130,30 +146,48 @@ function Pcoordenadas(prop) {
         const res = await updatePoint(watch("name"), watch());
         const respuespuntos = await getAllPoints();
         setpointsOptions(respuespuntos.data);
-
+        setPuntosList("");
         toast.success(`${res.data.name} Actualizado`, {
           position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
         });
       } catch (error) {
-        toast.success(error.response.data.name, { position: "bottom-right" });
+        toast.success(error.message, {
+          position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
+        });
       }
     } else {
-      toast.error("select a point", { position: "bottom-right" });
+      toast.error("select a point", {
+        position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
+      });
     }
   };
   const moverpunto = async () => {
-    const enviarPunto = {
-      command: "play",
-      type: "point",
-      name: currentPunto.name,
-    };
-    try {
-      await playpoint(enviarPunto);
-      toast.success(` Robot en movimiento `, {
+    if (currentPunto) {
+      const enviarPunto = {
+        command: "play",
+        type: "point",
+        name: currentPunto.name,
+      };
+      try {
+        await playpoint(enviarPunto);
+        toast.success(` Robot en movimiento `, {
+          position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
+        });
+      } catch (error) {
+        toast.success(error.message, {
+          position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
+        });
+      }
+    } else {
+      toast.error("select a point", {
         position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
       });
-    } catch (error) {
-      toast.success(error.response.data.name, { position: "bottom-right" });
     }
   };
 
@@ -178,15 +212,22 @@ function Pcoordenadas(prop) {
       try {
         await createMovements(list);
         setMovementOptions((listsOptions) => [...listsOptions, list]);
-        toast.success("Movimiento creado", { position: "bottom-right" });
+        toast.success("Movimiento creado", {
+          position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
+        });
         setNameList("");
         setPuntosList([]);
       } catch (error) {
-        toast.error(error.response.data.name, { position: "bottom-right" });
+        toast.error(error.message, {
+          position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
+        });
       }
     } else {
       toast.error("Please enter a name for the Movement", {
         position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
       });
     }
   }
@@ -203,40 +244,44 @@ function Pcoordenadas(prop) {
       try {
         const sequence = new Sequence(sequenceName, movementsList);
         const response = await createsequence(sequence);
-        toast.success("created sequence", { position: "bottom-right" });
+        toast.success("created sequence", {
+          position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
+        });
         setSequenceName("");
         setMovementsList([]);
         if (response.data) {
           setSequenceOptions([...sequenceOptions, response.data]);
         }
       } catch (error) {
-        toast.error(error.response.data.name, {
+        toast.error(error.message, {
           position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
         });
       }
     } else {
       toast.error("Please give a name to the sequence", {
         position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
       });
     }
   }
 
   //funcion para activar y desactivar motores
   const [isActive, setIsActive] = useState(true);
-  const [previousState, setPreviousState] = useState(true);
+  const [previousState, setPreviousState] = useState(false);
 
   const handleToggle = async () => {
-    const newActiveState = !isActive;
-    setPreviousState(isActive); // Guardar el estado anterior
-    setIsActive(newActiveState); // Actualizar el estado actual
-    const jsonData = {
-      command: "cli",
-      type: newActiveState ? "motors_on" : "motors_off",
-      name: "null",
-    };
-
-    //esto es lo que se tiene que acomodar cuando se conecte a ARIA
     try {
+      const newActiveState = !isActive;
+      setPreviousState(isActive); // Guardar el estado anterior
+      setIsActive(newActiveState); // Actualizar el estado actual
+      const jsonData = {
+        command: "cli",
+        type: newActiveState ? "motors_on" : "motors_off",
+        name: "null",
+      };
+
       const res = await manejoMotor(jsonData);
       /* console.log(res.data); */
       if (res.data) {
@@ -250,196 +295,367 @@ function Pcoordenadas(prop) {
 
       toast.success(`Motores ${newActiveState ? "encendidos" : "apagados"}`, {
         position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
       });
       if (newActiveState) {
         console.log("probando esta condicion...");
       }
     } catch (error) {
-      toast.error(error.response.data.name, { position: "bottom-right" });
+      toast.error(error.message, {
+        position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
+      });
     }
+  };
+  const handleCancel = () => {
+    console.log(`previusStateANTES: ${previousState}`);
+    setIsActive(!previousState); // Revertir al estado anterior
+    console.log(`previusStateDESPUES: ${previousState}`);
+    toast.error("Action canceled", {
+      position: "bottom-right",
+      style: { backgroundColor: "#333", color: "#fff" },
+    });
   };
 
   return (
     <>
-      <Cli />
-      <div className="container-card">
-        <h2 className="titulo-card">Coordinate Points</h2>
+      <Cli theme={theme} />
+      <div
+        className={`
+      container-card
+      primer-contenedor
+      h-pp-c
+      ${theme === "dark" ? "container-card-dark" : "container-card-light"} `}
+      >
+        <h2
+          className={`titulo-card ${
+            theme === "dark" ? "titulo-card-dark" : "titulo-card-light"
+          }`}
+        >
+          Coordinate Points
+        </h2>
 
-        <form className="container-form" onSubmit={submit}>
-          <div className="container-input ">
-            <label htmlFor="name">Name: </label>
-            <input
-              type="text"
-              placeholder="Max 5 Char"
-              className="input-coordenada escribirname"
-              {...register("name", { required: true, maxLength: 5 })}
-            />
-            {errors.name && <small>The name is required</small>}
-          </div>
-
-          <div className="container-input">
-            <label htmlFor="motor1_angle">motor 1 angle: </label>
-            <input
-              name="motor1_angle"
-              className="input-coordenada"
-              {...register("motor1_angle", {
-                required: true,
-                max: 270,
-                min: -270,
-                valueAsNumber: true,
-              })}
-            />
-            {errors.motor1_angle && <small> Motor1_angle is required</small>}
-          </div>
-
-          <div className="container-input">
-            <label htmlFor="motor2_angle">motor 2 angle: </label>
-            <input
-              className="input-coordenada"
-              {...register("motor2_angle", {
-                required: true,
-                max: 270,
-                min: -270,
-                valueAsNumber: true,
-              })}
-            />
-            {errors.motor2_angle && <small> Motor2_angle is required</small>}
-          </div>
-
-          <div className="container-input">
-            <label htmlFor="motor3_angle">motor 3 angle: </label>
-            <input
-              className="input-coordenada"
-              {...register("motor3_angle", {
-                required: true,
-                max: 270,
-                min: -270,
-                valueAsNumber: true,
-              })}
-            />
-            {errors.motor3_angle && <small> Motor3_angle is required</small>}
-          </div>
-
-          <div className="container-input">
-            <label htmlFor="motor4_angle">motor 4 angle: </label>
-            <input
-              className="input-coordenada"
-              {...register("motor4_angle", {
-                required: true,
-                max: 270,
-                min: -270,
-                valueAsNumber: true,
-              })}
-            />
-            {errors.motor4_angle && <small> Motor4_angle is required</small>}
-          </div>
-          <div className="container-input">
-            <label htmlFor="motor5_angle">motor 5 angle: </label>
-            <input
-              className="input-coordenada"
-              {...register("motor5_angle", {
-                required: true,
-                max: 270,
-                min: -270,
-                valueAsNumber: true,
-              })}
-            />
-            {errors.motor5_angle && <small> Motor5_angle is required</small>}
-          </div>
-          <div className="botton-form">
-            <div className="contenido1">
-              <div className="motor-control">
-                <label className="switch">
-                  <input
-                    type="checkbox"
-                    id="toggleSwitch"
-                    checked={isActive}
-                    onChange={() => {
-                      handleToggle();
-                    }}
-                  />
-                  <span className="slider"></span>
-                </label>
-                <span className="status" id="statusText">
-                  {isActive ? "Motores ON" : "Motores OFF"}
-                </span>
+        <div className="contenedor-card-pp">
+          <div className="contenedor-imagen-form">
+            <div className="imagen-izquierda">
+              <div className="contenedor-iamgen-brazo">
+                <div className="imagen-arm">
+                  {theme === "dark" ? (
+                    <img
+                      src={require(`../images/brazo-robotico (1).png`)}
+                      alt="imagen-brazo-robotico-dark"
+                    />
+                  ) : (
+                    <img
+                      src={require(`../images/brazo-robotico (2).png`)}
+                      alt="imagen-brazo-robotico-light"
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="contenido1">
+                <div className="motor-control">
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      id="toggleSwitch"
+                      checked={isActive}
+                      onChange={() => {
+                        const actionMessage = isActive
+                          ? "apagarán"
+                          : "energizarán";
+                        const confirmationMessage = window.confirm(
+                          `Al confirmar, los motores se ${actionMessage}. ¿Estás seguro/a?`
+                        );
+                        if (confirmationMessage) {
+                          handleToggle();
+                        } else {
+                          handleCancel();
+                        }
+                      }}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                  <span
+                    className={`status ${
+                      theme === "dark" ? "status-dark" : "status-ligth"
+                    } `}
+                    id="statusText"
+                  >
+                    {isActive ? "Motores ON" : "Motores OFF"}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="contenido2">
-              <Button text="Save Point" />
+            <div className="contenido-derecha-form">
+              <form
+                className={`container-form ${
+                  theme === "dark"
+                    ? "container-form-dark"
+                    : "container-form-light"
+                } `}
+                onSubmit={submit}
+              >
+                <div className="container-input ">
+                  <label htmlFor="name">Name: </label>
+                  <input
+                    type="text"
+                    placeholder="Max 5 Char"
+                    className={`input-coordenada escribirname ${
+                      theme === "dark"
+                        ? "input-coordenada-dark"
+                        : "input-coordenada-light"
+                    }`}
+                    {...register("name", { required: true, maxLength: 5 })}
+                    autoComplete="off"
+                  />
+                  <div className="container-small">
+                    {errors.name && <small>required</small>}
+                  </div>
+                </div>
+
+                <div className="container-input">
+                  <label htmlFor="motor1_angle" className="mover-derecha">
+                    motor 1 angle:{" "}
+                  </label>
+                  <input
+                    name="motor1_angle"
+                    className={`input-coordenada  ${
+                      theme === "dark"
+                        ? "input-coordenada-dark"
+                        : "input-coordenada-light"
+                    }`}
+                    {...register("motor1_angle", {
+                      required: true,
+                      max: 270,
+                      min: -270,
+                      valueAsNumber: true,
+                    })}
+                    autoComplete="off"
+                  />
+
+                  <MoveMotor
+                    setValue={setValue}
+                    motor="motor1_angle"
+                    valor={watch("motor1_angle")}
+                    watch = {watch()}
+                  />
+                  <div className="container-small">
+                    {errors.motor1_angle && <small>required</small>}
+                  </div>
+                </div>
+
+                <div className="container-input">
+                  <label htmlFor="motor2_angle">motor 2 angle: </label>
+                  <input
+                    className={`input-coordenada ${
+                      theme === "dark"
+                        ? "input-coordenada-dark"
+                        : "input-coordenada-light"
+                    }`}
+                    autoComplete="off"
+                    {...register("motor2_angle", {
+                      required: true,
+                      max: 270,
+                      min: -270,
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <MoveMotor
+                    setValue={setValue}
+                    motor="motor2_angle"
+                    valor={watch("motor2_angle")}
+                    watch = {watch()}
+                  />
+
+                  <div className="container-small">
+                    {errors.motor2_angle && <small>required</small>}
+                  </div>
+                </div>
+
+                <div className="container-input">
+                  <label htmlFor="motor3_angle">motor 3 angle: </label>
+                  <input
+                    autoComplete="off"
+                    className={`input-coordenada ${
+                      theme === "dark"
+                        ? "input-coordenada-dark"
+                        : "input-coordenada-light"
+                    }`}
+                    {...register("motor3_angle", {
+                      required: true,
+                      max: 270,
+                      min: -270,
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <MoveMotor
+                    setValue={setValue}
+                    motor="motor3_angle"
+                    valor={watch("motor3_angle")}
+                    watch = {watch()}
+                  />
+
+                  <div className="container-small">
+                    {errors.motor3_angle && <small>required</small>}
+                  </div>
+                </div>
+
+                <div className="container-input">
+                  <label htmlFor="motor4_angle">motor 4 angle: </label>
+                  <input
+                    autoComplete="off"
+                    className={`input-coordenada ${
+                      theme === "dark"
+                        ? "input-coordenada-dark"
+                        : "input-coordenada-light"
+                    }`}
+                    {...register("motor4_angle", {
+                      required: true,
+                      max: 270,
+                      min: -270,
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <MoveMotor
+                    setValue={setValue}
+                    motor="motor4_angle"
+                    valor={watch("motor4_angle")}
+                    watch = {watch()}
+                  />
+
+                  <div className="container-small">
+                    {errors.motor4_angle && <small>required</small>}
+                  </div>
+                </div>
+                <div className="container-input">
+                  <label htmlFor="motor5_angle">motor 5 angle: </label>
+                  <input
+                    autoComplete="off"
+                    className={`input-coordenada ${
+                      theme === "dark"
+                        ? "input-coordenada-dark"
+                        : "input-coordenada-light"
+                    }`}
+                    {...register("motor5_angle", {
+                      required: true,
+                      max: 270,
+                      min: -270,
+                      valueAsNumber: true,
+                    })}
+                  />
+                  <MoveMotor
+                    setValue={setValue}
+                    motor="motor5_angle"
+                    valor={watch("motor5_angle")}
+                    watch = {watch()}
+                  />
+
+                  <div className="container-small">
+                    {errors.motor5_angle && <small>required</small>}
+                  </div>
+                </div>
+                <div className="botton-form">
+                  <div className="contenido2">
+                    <Button text="Save Point" theme={theme} />
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-        </form>
-        <div className="form2"></div>
-        <div className="footer-card-select">
-          <select
-            className="select"
-            defaultValue={""}
-            name="puntos"
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value === "") {
-                setCurrentPunto(null); // o cualquier otro valor adecuado para representar "Seleccionar punto"
-              } else {
-                const p = JSON.parse(value);
-                setCurrentPunto(p);
-              }
-            }}
-          >
-            <option value={""}>Seleccionar punto</option>
-            {pointsOptions.map((p, i) => (
-              <option className="lista-li" key={i} value={JSON.stringify(p)}>
-                {`${p.name}: [${p.motor1_angle}],
+          <div className="form2"></div>
+          <div className="footer-card-select">
+            <select
+              className={`select ${
+                theme === "dark" ? "select-dark" : "select-light"
+              }`}
+              defaultValue={""}
+              name="puntos"
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "") {
+                  setCurrentPunto(null); // o cualquier otro valor adecuado para representar "Seleccionar punto"
+                } else {
+                  const p = JSON.parse(value);
+                  setCurrentPunto(p);
+                }
+              }}
+            >
+              <option value={""}>Select point</option>
+              {pointsOptions.map((p, i) => (
+                <option
+                  className={`lista-li option-hover ${
+                    theme === "dark" ? "lista-li-dark" : "lista-li-light"
+                  }`}
+                  key={i}
+                  value={JSON.stringify(p)}
+                >
+                  {`${p.name}: [${p.motor1_angle}],
                   [${p.motor2_angle}],
                   [${p.motor3_angle}],
                   [${p.motor4_angle}],
                   [${p.motor5_angle}]`}
-              </option>
-            ))}
-          </select>
-          <div className="opcion-seleccionada">
-            selected option:
-            <b>{currentPunto ? currentPunto.name : ""}</b>
-          </div>
-          {/* <Buttonsend textbutton="Guadar" onClick={()=>{console.log(i)}} /> */}
+                </option>
+              ))}
+            </select>
+            <div className="opcion-seleccionada">
+              selected option:
+              <b>{currentPunto ? currentPunto.name : ""}</b>
+            </div>
+            {/* <Buttonsend textbutton="Guadar" onClick={()=>{console.log(i)}} /> */}
 
-          <div className="separacion-borrarpunto">
-            <Button text={"Play Punto"} onClick={moverpunto} />
-            <Button text={"Update Punto"} onClick={actualizandoPunto} />
-            <Button
-              text="Delete Point"
-              onClick={async () => {
-                if (currentPunto) {
-                  const confirmDelete = window.confirm(
-                    "Atención: Si borras este punto, todos los movimientos asociados a él serán eliminados permanentemente. ¿Estás seguro de que deseas proceder?"
-                  );
-                  if (confirmDelete) {
-                    try {
-                      await deletePoint(currentPunto.name);
-                      toast.success(`${currentPunto.name} was deleted`, {
-                        position: "bottom-right",
-                      });
-                      const nuevospointsOptions = pointsOptions.filter(
-                        (punto) => punto.name !== currentPunto.name
-                      );
-                      setpointsOptions(nuevospointsOptions);
-                      //console.log(nuevospointsOptions);
-                      setCurrentPunto(null);
-                    } catch (error) {
-                      toast.error(error.response.data.name, {
-                        position: "bottom-right",
-                      });
+            <div className="separacion-borrarpunto">
+              <Button text={"Play Point"} onClick={moverpunto} theme={theme} />
+              <Button
+                text={"Update Point"}
+                onClick={actualizandoPunto}
+                theme={theme}
+              />
+              <Button
+                theme={theme}
+                text="Delete Point"
+                onClick={async () => {
+                  if (currentPunto) {
+                    const confirmDelete = window.confirm(
+                      "Atención: Si borras este punto, todos los movimientos asociados a él serán eliminados permanentemente. ¿Estás seguro de que deseas proceder?"
+                    );
+                    if (confirmDelete) {
+                      try {
+                        await deletePoint(currentPunto.name);
+                        toast.success(`${currentPunto.name} was deleted`, {
+                          position: "bottom-right",
+                          style: { backgroundColor: "#333", color: "#fff" },
+                        });
+                        const nuevospointsOptions = pointsOptions.filter(
+                          (punto) => punto.name !== currentPunto.name
+                        );
+                        setpointsOptions(nuevospointsOptions);
+                        //console.log(nuevospointsOptions);
+                        setCurrentPunto(null);
+                      } catch (error) {
+                        toast.error(error.message, {
+                          style: { backgroundColor: "#333", color: "#fff" },
+                          position: "bottom-right",
+                        });
+                      }
                     }
+                  } else {
+                    toast.error("Select a point", {
+                      position: "bottom-right",
+                      style: { backgroundColor: "#333", color: "#fff" },
+                    });
                   }
-                } else {
-                  toast.error("Select a point", { position: "bottom-right" });
-                }
-              }}
-            />
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div className="container-card">
+      <div
+        className={`container-card segundo-contenedor ${
+          theme === "dark" ? "container-card-dark" : "container-card-light"
+        } `}
+      >
         <h2 className="titulo-card">Create Movements</h2>
         {/* esto es lo que se va a mostrar en el fron(tarjetas de puntos) */}
         <div className="container-scroll">
@@ -453,19 +669,27 @@ function Pcoordenadas(prop) {
                   autoComplete="off"
                   placeholder="Max 10 Char"
                   maxLength={10}
-                  className="input-coordenada escribirname"
+                  className={`input-coordenada escribirname ${
+                    theme === "dark"
+                      ? "input-coordenada-dark"
+                      : "input-coordenada-light"
+                  }`}
                   onChange={(e) => {
                     setNameList(e.target.value);
                   }}
                 />
+                <AiOutlineClear
+                  className={`${
+                    theme === "dark"
+                      ? "contenedor-refesh-dark"
+                      : "contenedor-refesh-light"
+                  }`}
+                  onClick={() => {
+                    setPuntosList([]);
+                    setNameList("");
+                  }}
+                />
               </div>
-              <AiOutlineDelete
-                className="contenedor-refesh"
-                onClick={() => {
-                  setPuntosList([]);
-                  setNameList("");
-                }}
-              />
             </div>
             <div className="active-gripper">
               <label htmlFor="">Gripper </label>
@@ -483,10 +707,19 @@ function Pcoordenadas(prop) {
             >
               {Array.isArray(puntosList) && puntosList.length > 0 ? (
                 puntosList.map((p, index) => (
-                  <li className="lista-li" key={index}>
+                  <li
+                    className={`lista-li option-hover ${
+                      theme === "dark" ? "lista-li-dark" : "lista-li-light"
+                    }`}
+                    key={index}
+                  >
                     <div className="separacion-play">
                       <AiOutlinePlayCircle
-                        className="play-punto"
+                        className={`${
+                          theme === "dark"
+                            ? "play-punto-dark"
+                            : "play-punto-light"
+                        }`}
                         onClick={async () => {
                           /* Esta accion dara play a solo un punto */
                           const enviarPunto = {
@@ -498,10 +731,12 @@ function Pcoordenadas(prop) {
                           try {
                             await playpoint(enviarPunto);
                             toast.success("Robot Moviendose", {
+                              style: { backgroundColor: "#333", color: "#fff" },
                               position: "bottom-right",
                             });
                           } catch (error) {
-                            toast.error(error.response.data.name, {
+                            toast.error(error.message, {
+                              style: { backgroundColor: "#333", color: "#fff" },
                               position: "bottom-right",
                             });
                           }
@@ -514,15 +749,19 @@ function Pcoordenadas(prop) {
                       </div>
                       <div className="separacion-coordenada">
                         {`[${p.motor1_angle}],
-                  [${p.motor2_angle}],
-                  [${p.motor3_angle}],
-                  [${p.motor4_angle}],
-                  [${p.motor5_angle}]`}
+                        [${p.motor2_angle}],
+                        [${p.motor3_angle}],
+                        [${p.motor4_angle}],
+                        [${p.motor5_angle}]`}
                       </div>
                     </div>
                     <div className="separacion-delete">
                       <AiOutlineCloseCircle
-                        className="delete-punto"
+                        className={`${
+                          theme === "dark"
+                            ? "delete-punto-dark"
+                            : "delete-punto-light"
+                        }`}
                         onClick={() => {
                           deleteThismovement(index);
                         }}
@@ -541,11 +780,13 @@ function Pcoordenadas(prop) {
             </ReactSortable>
           </ul>
           <div className="footer-card">
-            <Button text="Save Movement" onClick={savePoints} />
+            <Button text="Save Movement" onClick={savePoints} theme={theme} />
           </div>
           <div className="footer-card-select">
             <select
-              className="select"
+              className={`select ${
+                theme === "dark" ? "select-dark" : "select-light"
+              }`}
               defaultValue={""}
               name="puntos"
               onChange={(e) => {
@@ -558,9 +799,15 @@ function Pcoordenadas(prop) {
                 }
               }}
             >
-              <option value={""}>Seleccionar punto</option>
+              <option value={""}>Select point</option>
               {pointsOptions.map((p, i) => (
-                <option className="lista-li" key={i} value={JSON.stringify(p)}>
+                <option
+                  className={`lista-li option-hover ${
+                    theme === "dark" ? "lista-li-dark" : "lista-li-light"
+                  }`}
+                  key={i}
+                  value={JSON.stringify(p)}
+                >
                   {`${p.name}: 
                   [${p.motor1_angle}],
                   [${p.motor2_angle}],
@@ -576,17 +823,22 @@ function Pcoordenadas(prop) {
             </div>
             {/* <Buttonsend textbutton="Guadar" onClick={()=>{console.log(i)}} /> */}
             <Button
+              theme={theme}
               text="Add To The List"
               onClick={() => {
                 if (currentPunto) {
                   setPuntosList([...puntosList, currentPunto]);
                 } else {
-                  toast.error("Select a point", { position: "bottom-right" });
+                  toast.error("Select a point", {
+                    position: "bottom-right",
+                    style: { backgroundColor: "#333", color: "#fff" },
+                  });
                 }
               }}
             />
             <div className="separacion-borrarpunto">
               <Button
+                theme={theme}
                 text="Update Movement"
                 onClick={async () => {
                   if (currentMovement) {
@@ -614,60 +866,26 @@ function Pcoordenadas(prop) {
                         ...objetoResultado,
                       };
                       /* console.log(`requestData: ${JSON.stringify(requestData)}`); */
-                      const res = await updateMovement(
-                        currentMovement.name,
-                        requestData
-                      );
+                      await updateMovement(currentMovement.name, requestData);
                       /* console.log(res); */
                       const movementsres = await getAllMovements();
                       setMovementOptions(movementsres.data);
                       toast.success(
-                        `${currentMovement.name} ha sido actualizado`
-                      );
+                        `${currentMovement.name} ha sido actualizado`, {
+                          style: { backgroundColor: "#333", color: "#fff" },
+                          position: "bottom-right",
+                        });
                     } else {
                       toast.error("Verifica si hay elementos", {
+                        style: { backgroundColor: "#333", color: "#fff" },
                         position: "bottom-right",
                       });
                     }
                   } else {
                     toast.error("select a movement", {
+                      style: { backgroundColor: "#333", color: "#fff" },
                       position: "bottom-right",
                     });
-                  }
-                }}
-              />
-
-              <Button
-                text="Delete Point"
-                onClick={async () => {
-                  if (currentPunto) {
-                    const confirmDelete = window.confirm(
-                      "Atención: Si borras este punto, todos los movimientos asociados a él serán eliminados permanentemente. ¿Estás seguro de que deseas proceder?"
-                    );
-                    if (confirmDelete) {
-                      try {
-                        await deletePoint(currentPunto.name);
-                        toast.success(`${currentPunto.name} was deleted`, {
-                          position: "bottom-right",
-                        });
-                        const nuevospointsOptions = pointsOptions.filter(
-                          (punto) => punto.name !== currentPunto.name
-                        );
-                        setpointsOptions(nuevospointsOptions);
-                        //console.log(nuevospointsOptions);
-                        setCurrentPunto(null);
-                      } catch (error) {
-                        toast.error(error.response.data.name, {
-                          position: "bottom-right",
-                        });
-                      }
-                    } else {
-                      toast.error("Accion cancelada", {
-                        position: "bottom-right",
-                      });
-                    }
-                  } else {
-                    toast.error("Select a point", { position: "bottom-right" });
                   }
                 }}
               />
@@ -675,10 +893,14 @@ function Pcoordenadas(prop) {
           </div>
         </div>
       </div>
-      <div className="container-card">
+      <div
+        className={`container-card tercer-contenedor  ${
+          theme === "dark" ? "container-card-dark" : "container-card-light"
+        }`}
+      >
         <h2 className="titulo-card">Create Sequences</h2>
         <div className="container-scroll">
-          <ul className="container-li" setSequenceName>
+          <ul className="container-li">
             <div className="nombrar">
               <label>Name sequence:</label>
 
@@ -689,14 +911,22 @@ function Pcoordenadas(prop) {
                 autoComplete="off"
                 placeholder="Max 30 Char"
                 maxLength={30}
-                className="input-coordenada escribirname"
+                className={`input-coordenada escribirname ${
+                  theme === "dark"
+                    ? "input-coordenada-dark"
+                    : "input-coordenada-light"
+                }`}
                 onChange={(e) => {
                   setSequenceName(e.target.value);
                 }}
               />
 
-              <AiOutlineDelete
-                className="contenedor-refesh"
+              <AiOutlineClear
+                className={`${
+                  theme === "dark"
+                    ? "contenedor-refesh-dark"
+                    : "contenedor-refesh-light"
+                }`}
                 onClick={() => {
                   setMovementsList([]);
                   setSequenceName("");
@@ -710,10 +940,19 @@ function Pcoordenadas(prop) {
             >
               {Array.isArray(movementsList) && movementsList.length > 0 ? (
                 movementsList.map((p, index) => (
-                  <li className="lista-li" key={index}>
+                  <li
+                    className={`lista-li option-hover ${
+                      theme === "dark" ? "lista-li-dark" : "lista-li-light"
+                    }`}
+                    key={index}
+                  >
                     <div className="separacion-play">
                       <AiOutlinePlayCircle
-                        className="play-punto"
+                        className={`${
+                          theme === "dark"
+                            ? "play-punto-dark"
+                            : "play-punto-light"
+                        }`}
                         onClick={async () => {
                           const playmov = {
                             command: "play",
@@ -725,10 +964,12 @@ function Pcoordenadas(prop) {
                             await playmovement(playmov);
                             /* console.log(playmov); */
                             toast.success("Robot Moviendose", {
+                              style: { backgroundColor: "#333", color: "#fff" },
                               position: "bottom-right",
                             });
                           } catch (error) {
-                            toast.error(error.response.data.name, {
+                            toast.error(error.message, {
+                              style: { backgroundColor: "#333", color: "#fff" },
                               position: "bottom-right",
                             });
                           }
@@ -753,7 +994,11 @@ function Pcoordenadas(prop) {
 
                     <div className="separacion-delete">
                       <AiOutlineCloseCircle
-                        className="delete-punto"
+                        className={`${
+                          theme === "dark"
+                            ? "delete-punto-dark"
+                            : "delete-punto-light"
+                        }`}
                         onClick={() => {
                           deleteThisSequence(index);
                         }}
@@ -769,6 +1014,7 @@ function Pcoordenadas(prop) {
 
           <div className="footer-card solo-sequence">
             <Button
+              theme={theme}
               text="Save Sequence"
               onClick={() => {
                 saveSequence();
@@ -777,7 +1023,9 @@ function Pcoordenadas(prop) {
           </div>
           <div className="footer-card-select">
             <select
-              className="select"
+              className={`select ${
+                theme === "dark" ? "select-dark" : "select-light"
+              }`}
               defaultValue={""}
               onChange={async (e) => {
                 const value = e.target.value;
@@ -815,17 +1063,6 @@ function Pcoordenadas(prop) {
                           : null;
 
                       // Ahora puedes trabajar con p1, p2, p3, p4 y p5 sin preocuparte por errores si son null.
-
-                      for (let i = 0; i < data.length; i++) {
-                        /* console.log(i); */
-                      }
-                      for (const clave in data) {
-                        if (clave.startsWith("point")) {
-                          const punto = data[clave];
-                          /* console.log(`Clave: ${clave}, Valor: ${punto}`); */
-                          // Aquí puedes realizar cualquier acción que necesites con el punto
-                        }
-                      }
 
                       const puntosList = [];
 
@@ -865,14 +1102,39 @@ function Pcoordenadas(prop) {
             >
               <option value={""}>Select a move</option>
               {movementOptions.map((p, i) => (
-                <option className="lista-li" key={i} value={JSON.stringify(p)}>
-                  {`${p.name}:    
-                  [${p.gripper}],
-                  [${p.point1}],
-                  [${p.point2}],
-                  [${p.point3}],
-                  [${p.point4}],
-                  [${p.point5}]`}
+                <option
+                  className={`lista-li option-hover ${
+                    theme === "dark" ? "lista-li-dark" : "lista-li-light"
+                  }`}
+                  key={i}
+                  value={JSON.stringify(p)}
+                >
+                  {/* si agregan mas puntos para los movimientos aqui es donde se puede hacer ver */}
+                  {`${p.name}: ${
+                    p.gripper !== null && p.gripper !== undefined
+                      ? `[${p.gripper}]`
+                      : ""
+                  }${
+                    p.point1 !== null && p.point1 !== undefined
+                      ? `, [${p.point1}]`
+                      : ""
+                  }${
+                    p.point2 !== null && p.point2 !== undefined
+                      ? `, [${p.point2}]`
+                      : ""
+                  }${
+                    p.point3 !== null && p.point3 !== undefined
+                      ? `, [${p.point3}]`
+                      : ""
+                  }${
+                    p.point4 !== null && p.point4 !== undefined
+                      ? `, [${p.point4}]`
+                      : ""
+                  }${
+                    p.point5 !== null && p.point5 !== undefined
+                      ? `, [${p.point5}]`
+                      : ""
+                  }`}
                 </option>
               ))}
             </select>
@@ -882,17 +1144,22 @@ function Pcoordenadas(prop) {
             </div>
             {/* <Buttonsend textbutton="Guadar" onClick={()=>{console.log(i)}} /> */}
             <Button
+              theme={theme}
               text="Add To The List"
               onClick={() => {
                 if (currentMovement) {
                   savePointsList();
                 } else {
-                  toast.error("Select a move", { position: "bottom-right" });
+                  toast.error("Select a move", {
+                    position: "bottom-right",
+                    style: { backgroundColor: "#333", color: "#fff" },
+                  });
                 }
               }}
             />
             <div className="separacion-borrarpunto ">
               <Button
+                theme={theme}
                 text="Play movement"
                 onClick={async () => {
                   if (currentMovement) {
@@ -905,16 +1172,19 @@ function Pcoordenadas(prop) {
                     try {
                       playpoint(enviarmovement);
                       toast.success("Robot Moviendose", {
+                        style: { backgroundColor: "#333", color: "#fff" },
                         position: "bottom-right",
                       });
                       /*  console.log(enviarmovement); */
                     } catch (error) {
-                      toast.error(error.response.data.name, {
+                      toast.error(error.message, {
+                        style: { backgroundColor: "#333", color: "#fff" },
                         position: "bottom-right",
                       });
                     }
                   } else {
                     toast.error("Select a movement", {
+                      style: { backgroundColor: "#333", color: "#fff" },
                       position: "bottom-right",
                     });
                   }
@@ -922,6 +1192,7 @@ function Pcoordenadas(prop) {
               />
 
               <Button
+                theme={theme}
                 text="Delete Movement"
                 onClick={async () => {
                   if (currentMovement) {
@@ -932,6 +1203,7 @@ function Pcoordenadas(prop) {
                       try {
                         await deleteMovements(currentMovement.name);
                         toast.success("Movement was deleted", {
+                          style: { backgroundColor: "#333", color: "#fff" },
                           position: "bottom-right",
                         });
                         const newlistsOptions = movementOptions.filter(
@@ -940,19 +1212,24 @@ function Pcoordenadas(prop) {
                         setMovementOptions(newlistsOptions);
                         setCurrentMovement(null);
                       } catch (error) {
-                        toast.error(error.response.data.name, {
+                        toast.error(error.message, {
+                          style: { backgroundColor: "#333", color: "#fff" },
                           position: "bottom-right",
                         });
                       }
                     }
                   } else {
-                    toast.error("Select a move", { position: "bottom-right" });
+                    toast.error("Select a move", {
+                      position: "bottom-right",
+                      style: { backgroundColor: "#333", color: "#fff" },
+                    });
                   }
                 }}
               />
             </div>
             <div>
               <Button
+                theme={theme}
                 text="Update Sequence"
                 onClick={async () => {
                   if (currentMovement) {
@@ -973,6 +1250,16 @@ function Pcoordenadas(prop) {
                       movement13: "",
                       movement14: "",
                       movement15: "",
+                      movement16: "",
+                      movement17: "",
+                      movement18: "",
+                      movement19: "",
+                      movement20: "",
+                      movement21: "",
+                      movement22: "",
+                      movement23: "",
+                      movement24: "",
+                      movement25: "",
                     };
                     for (let i = 0; i < movementsList.length; i++) {
                       if (movementsList[i] && movementsList[i].name) {
@@ -989,15 +1276,18 @@ function Pcoordenadas(prop) {
                       setSequenceOptions(ressequence.data);
                       console.log(res);
                       toast.success("Se actualizo sequence", {
+                        style: { backgroundColor: "#333", color: "#fff" },
                         position: "bottom-right",
                       });
                     } catch (error) {
-                      toast.error(error.response.data.name, {
+                      toast.error(error.message, {
+                        style: { backgroundColor: "#333", color: "#fff" },
                         position: "bottom-right",
                       });
                     }
                   } else {
                     toast.error("select a sequence", {
+                      style: { backgroundColor: "#333", color: "#fff" },
                       position: "bottom-right",
                     });
                   }
@@ -1008,294 +1298,172 @@ function Pcoordenadas(prop) {
           </div>
         </div>
       </div>
-
-      <div className="container-card card-full">
-        <h2 className="titulo-card">View Sequences</h2>
-        <ul className="container-li conteiner-viewSequences">
-          {Array.isArray(sequenceOptions) && sequenceOptions.length > 0 ? (
-            sequenceOptions.map((item, index) => (
-              <li
-                className="lista-li li-grandes li-click"
-                onClick={async () => {
-                  /* console.log(`Click en ${JSON.stringify(item)}`);
+      {Array.isArray(sequenceOptions) && sequenceOptions.length > 0 ? (
+        <div
+          className={`container-card card-full  ${
+            theme === "dark" ? "container-card-dark" : "container-card-light"
+          }`}
+        >
+          <h2 className="titulo-card">View Sequences</h2>
+          <ul className="container-li conteiner-viewSequences">
+            {Array.isArray(sequenceOptions) && sequenceOptions.length > 0 ? (
+              sequenceOptions.map((item, index) => (
+                <li
+                  className={`lista-li li-grandes li-click option-hover ${
+                    theme === "dark" ? "lista-li-dark" : "lista-li-light"
+                  }`}
+                  onClick={async () => {
+                    /* console.log(`Click en ${JSON.stringify(item)}`);
                   console.log(item.name); */
-                  await getSequence(item.name);
-                  setSequenceName(item.name); // Establece el valor del input con la cadena de texto de data.sequenceName
-                  toast(`[ ${item.name} ] selected`, {
-                    position: "bottom-right",
-                  });
+                    await getSequence(item.name);
+                    setSequenceName(item.name); // Establece el valor del input con la cadena de texto de data.sequenceName
+                    toast(`[ ${item.name} ] selected`, {
+                      style: { backgroundColor: "#333", color: "#fff" },
+                      position: "bottom-right",
+                    });
 
-                  const movement1 =
-                    item.movement1 !== null
-                      ? await getMovement(item.movement1)
-                      : null;
-                  const movement2 =
-                    item.movement2 !== null
-                      ? await getMovement(item.movement2)
-                      : null;
-                  const movement3 =
-                    item.movement3 !== null
-                      ? await getMovement(item.movement3)
-                      : null;
-                  const movement4 =
-                    item.movement4 !== null
-                      ? await getMovement(item.movement4)
-                      : null;
-                  const movement5 =
-                    item.movement5 !== null
-                      ? await getMovement(item.movement5)
-                      : null;
-                  const movement6 =
-                    item.movement6 !== null
-                      ? await getMovement(item.movement6)
-                      : null;
-                  const movement7 =
-                    item.movement7 !== null
-                      ? await getMovement(item.movement7)
-                      : null;
-                  const movement8 =
-                    item.movement8 !== null
-                      ? await getMovement(item.movement8)
-                      : null;
-                  const movement9 =
-                    item.movement9 !== null
-                      ? await getMovement(item.movement9)
-                      : null;
-                  const movement10 =
-                    item.movement10 !== null
-                      ? await getMovement(item.movement10)
-                      : null;
-                  const movement11 =
-                    item.movement11 !== null
-                      ? await getMovement(item.movement11)
-                      : null;
-                  const movement12 =
-                    item.movement12 !== null
-                      ? await getMovement(item.movement12)
-                      : null;
-                  const movement13 =
-                    item.movement13 !== null
-                      ? await getMovement(item.movement13)
-                      : null;
-                  const movement14 =
-                    item.movement14 !== null
-                      ? await getMovement(item.movement14)
-                      : null;
-                  const movement15 =
-                    item.movement15 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement16 =
-                    item.movement16 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement17 =
-                    item.movement17 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement18 =
-                    item.movement18 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement19 =
-                    item.movement19 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement20 =
-                    item.movement20 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement21 =
-                    item.movement21 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement22 =
-                    item.movement22 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement23 =
-                    item.movement23 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement24 =
-                    item.movement24 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
-                  const movement25 =
-                    item.movement25 !== null
-                    ? await getMovement(item.movement15)
-                    : null;
+                    const movementList = [];
 
-                  const movementList = [];
-
-                  if (movement1 !== null) {
-                    movementList.push(movement1.data);
-                  }
-
-                  if (movement2 !== null) {
-                    movementList.push(movement2.data);
-                  }
-
-                  if (movement3 !== null) {
-                    movementList.push(movement3.data);
-                  }
-
-                  if (movement4 !== null) {
-                    movementList.push(movement4.data);
-                  }
-
-                  if (movement5 !== null) {
-                    movementList.push(movement5.data);
-                  }
-                  if (movement6 !== null) {
-                    movementList.push(movement6.data);
-                  }
-                  if (movement7 !== null) {
-                    movementList.push(movement7.data);
-                  }
-                  if (movement8 !== null) {
-                    movementList.push(movement8.data);
-                  }
-                  if (movement9 !== null) {
-                    movementList.push(movement9.data);
-                  }
-                  if (movement10 !== null) {
-                    movementList.push(movement10.data);
-                  }
-                  if (movement11 !== null) {
-                    movementList.push(movement11.data);
-                  }
-                  if (movement12 !== null) {
-                    movementList.push(movement12.data);
-                  }
-                  if (movement13 !== null) {
-                    movementList.push(movement13.data);
-                  }
-                  if (movement14 !== null) {
-                    movementList.push(movement14.data);
-                  }
-                  if (movement15 !== null) {
-                    movementList.push(movement15.data);
-                  }
-                  if (movement16 !== null) {
-                    movementList.push(movement16.data);
-                  }
-                  if (movement17 !== null) {
-                    movementList.push(movement17.data);
-                  }
-                  if (movement18 !== null) {
-                    movementList.push(movement18.data);
-                  }
-                  if (movement19 !== null) {
-                    movementList.push(movement19.data);
-                  }
-                  if (movement20!== null) {
-                    movementList.push(movement20.data);
-                  }
-                  if (movement21 !== null) {
-                    movementList.push(movement21.data);
-                  }
-                  if (movement22 !== null) {
-                    movementList.push(movement22.data);
-                  }
-                  if (movement23 !== null) {
-                    movementList.push(movement23.data);
-                  }
-                  if (movement24 !== null) {
-                    movementList.push(movement24.data);
-                  }
-                  if (movement25 !== null) {
-                    movementList.push(movement25.data);
-                  }
-                  setMovementsList(movementList);
-                }}
-                key={index}
-              >
-                <div className="separacion-play">
-                  <AiOutlinePlayCircle
-                    className="play-punto"
-                    onClick={async () => {
-                      const playseq = {
-                        command: "play",
-                        type: "sequence",
-                        name: item.name,
-                      };
-                      try {
-                        await playsequence(playseq);
-                        toast.success("Robot Moviendose", {
-                          position: "bottom-right",
-                        });
-                      } catch (error) {
-                        toast.error(error.response.data.name, {
-                          position: "bottom-right",
-                        });
-                      }
-                    }}
-                  />
-                </div>
-                <div className="pld">
-                  <div className="separacion-name">
-                    <b>{`${item.name}`}</b>
-                  </div>
-                  <div className="separacion-coordenada">
-                    {/* Filtra y muestra solo los movimientos no nulos */}
-                    {Object.values(item)
-                      .slice(1) // Ignora el primer valor (name) y toma el resto
-                      .filter((movement) => movement !== null)
-                      .map((movement, movementIndex, filteredMovements) => (
-                        <span key={movementIndex}>
-                          [{movement}]
-                          {movementIndex < filteredMovements.length - 1 &&
-                            filteredMovements[movementIndex + 1] !== null &&
-                            ", "}
-                        </span>
-                      ))}
-                  </div>
-                </div>
-
-                <div className="separacion-delete">
-                  <AiOutlineCloseCircle
-                    className="delete-punto"
-                    onClick={async () => {
-                      const confirmdelete = window.confirm(
-                        "Advertencia: Estás a punto de borrar permanentemente una secuencia. Esta acción no se puede deshacer. Por favor, asegúrate de que estás seleccionando la secuencia correcta para eliminar. ¿Estás seguro de que deseas proceder con la eliminación?"
+                    if (item.movement1 !== null) {
+                      movementList.push(
+                        (await getMovement(item.movement1)).data
                       );
-                      if (confirmdelete === true) {
+                    }
+                    if (item.movement2 !== null) {
+                      movementList.push(
+                        (await getMovement(item.movement2)).data
+                      );
+                    }
+                    if (item.movement3 !== null) {
+                      movementList.push(
+                        (await getMovement(item.movement3)).data
+                      );
+                    }
+                    if (item.movement4 !== null) {
+                      movementList.push(
+                        (await getMovement(item.movement4)).data
+                      );
+                    }
+                    if (item.movement5 !== null) {
+                      movementList.push(
+                        (await getMovement(item.movement5)).data
+                      );
+                    }
+                  if (item.movement6 !== null) { movementList.push((await getMovement(item.movement6)).data) }
+                  if (item.movement7 !== null) { movementList.push((await getMovement(item.movement6)).data) }
+                  if (item.movement8 !== null) { movementList.push((await getMovement(item.movement8)).data) }
+                  if (item.movement9 !== null) { movementList.push((await getMovement(item.movement9)).data) }
+                  if (item.movement10 !== null) { movementList.push((await getMovement(item.movement10)).data) }
+                  if (item.movement11 !== null) { movementList.push((await getMovement(item.movement11)).data) }
+                  if (item.movement12 !== null) { movementList.push((await getMovement(item.movement12)).data) }
+                  if (item.movement13 !== null) { movementList.push((await getMovement(item.movement13)).data) }
+                  if (item.movement14 !== null) { movementList.push((await getMovement(item.movement14)).data) }
+                  if (item.movement15 !== null) { movementList.push((await getMovement(item.movement15)).data) }
+                  if (item.movement16 !== null) { movementList.push((await getMovement(item.movement16)).data) }
+                  if (item.movement17 !== null) { movementList.push((await getMovement(item.movement17)).data) }
+                  if (item.movement18 !== null) { movementList.push((await getMovement(item.movement18)).data) }
+                  if (item.movement19 !== null) { movementList.push((await getMovement(item.movement19)).data) }
+                  if (item.movement20 !== null) { movementList.push((await getMovement(item.movement20)).data) }
+                  if (item.movement21 !== null) { movementList.push((await getMovement(item.movement21)).data) }
+                  if (item.movement22 !== null) { movementList.push((await getMovement(item.movement22)).data) }
+                  if (item.movement23 !== null) { movementList.push((await getMovement(item.movement23)).data) }
+                  if (item.movement24 !== null) { movementList.push((await getMovement(item.movement24)).data) }
+                  if (item.movement25 !== null) { movementList.push((await getMovement(item.movement25)).data) }
+
+                    setMovementsList(movementList);
+                  }}
+                  key={index}
+                >
+                  <div className="separacion-play">
+                    <AiOutlinePlayCircle
+                      className={`${
+                        theme === "dark"
+                          ? "play-punto-dark"
+                          : "play-punto-light"
+                      }`}
+                      onClick={async () => {
+                        const playseq = {
+                          command: "play",
+                          type: "sequence",
+                          name: item.name,
+                        };
                         try {
-                          await deletesequence(item.name);
-                          toast.success(`${item.name} was deleted`, {
+                          await playsequence(playseq);
+                          toast.success("Robot Moviendose", {
+                            style: { backgroundColor: "#333", color: "#fff" },
                             position: "bottom-right",
                           });
-                          const nuevosequence = sequenceOptions.filter(
-                            (punto) => punto !== item
-                          );
-                          setSequenceOptions(nuevosequence);
                         } catch (error) {
-                          toast.error(error.response.data.name, {
+                          toast.error(error.message, {
+                            style: { backgroundColor: "#333", color: "#fff" },
                             position: "bottom-right",
                           });
                         }
-                      }
-                    }}
-                  />
-                </div>
-              </li>
-            ))
-          ) : (
-            <li className="img-none">
-              No sequences found.
-              <div className="no-data-img">
-                <img
-                  src={require(`../images/no-data.png`)}
-                  title="No se encontraron secuencias en la base de datos"
-                  alt="no-data"
-                  width={"100px"}
-                />
-              </div>
-            </li>
-          )}
-        </ul>
-      </div>
+                      }}
+                    />
+                  </div>
+                  <div className="pld">
+                    <div className="separacion-name">
+                      <b>{`${item.name}: `}</b>
+                    </div>
+                    <div className="separacion-coordenada">
+                      {/* Filtra y muestra solo los movimientos no nulos */}
+                      {Object.values(item)
+                        .slice(1) // Ignora el primer valor (name) y toma el resto
+                        .filter((movement) => movement !== null)
+                        .map((movement, movementIndex, filteredMovements) => (
+                          <span key={movementIndex}>
+                            [{movement}]
+                            {movementIndex < filteredMovements.length - 1 &&
+                              filteredMovements[movementIndex + 1] !== null &&
+                              ", "}
+                          </span>
+                        ))}
+                    </div>
+                  </div>
+
+                  <div className="separacion-delete">
+                    <AiOutlineCloseCircle
+                      className={`${
+                        theme === "dark"
+                          ? "delete-punto-dark"
+                          : "delete-punto-light"
+                      }`}
+                      onClick={async () => {
+                        const confirmdelete = window.confirm(
+                          "Advertencia: Estás a punto de borrar permanentemente una secuencia. Esta acción no se puede deshacer. Por favor, asegúrate de que estás seleccionando la secuencia correcta para eliminar. ¿Estás seguro de que deseas proceder con la eliminación?"
+                        );
+                        if (confirmdelete === true) {
+                          try {
+                            await deletesequence(item.name);
+                            toast.success(`${item.name} was deleted`, {
+                              style: { backgroundColor: "#333", color: "#fff" },
+                              position: "bottom-right",
+                            });
+                            const nuevosequence = sequenceOptions.filter(
+                              (punto) => punto !== item
+                            );
+                            setSequenceOptions(nuevosequence);
+                          } catch (error) {
+                            toast.error(error.message, {
+                              style: { backgroundColor: "#333", color: "#fff" },
+                              position: "bottom-right",
+                            });
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </li>
+              ))
+            ) : (
+              <li className="img-none">No sequences found.</li>
+            )}
+          </ul>
+        </div>
+      ) : (
+        <></>
+      )}
     </>
   );
 }

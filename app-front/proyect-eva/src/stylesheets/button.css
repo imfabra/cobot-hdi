@@ -3,7 +3,6 @@
   font-size: 1rem;
   padding: 3px;
   border-radius: 8px;
-  background-color: rgb(3, 77, 187);
   cursor: pointer;
   user-select: none;
   border: none;
@@ -12,18 +11,43 @@
   margin-right: 3px;
   font-weight: 500;
   color: rgb(255, 255, 255);
+  margin-right: 8px;
 }
-.button:hover {
+.button-dark{
+  background-color: rgb(0, 29, 87);
+}
+.button-light{
+  background-color: rgb(3, 77, 187);
+}
+
+
+.button-dark:hover {
+  background-color: rgb(0, 0, 0);
+  box-shadow: 0 0 3px 1px rgb(0, 0, 0);
+}
+.button-light:hover {
   background-color: rgb(21, 121, 154);
   box-shadow: 0 0 3px 1px rgba(21, 121, 154, 0.484);
 }
-.button:active {
+.button-dark:active {
+  background-color: rgb(0, 0, 0);
+}
+.button-light:active {
   background-color: rgb(67, 156, 186);
 }
-.red{
+.red-dark{
+  background-color: rgb(231, 26, 26);
+  background-color: #b30d0d;
+}
+.red-dark:hover{
+  background-color: rgb(118, 0, 0);
+
+  box-shadow: 0 0 3px 1px rgb(120, 9, 9);;
+}
+.red-light{
   background-color: rgb(253, 65, 65);
 }
-.red:hover{
+.red-light:hover{
   background-color: rgb(255, 0, 0);
   box-shadow: 0 0 3px 1px rgba(255, 61, 61, 0.432);
 }

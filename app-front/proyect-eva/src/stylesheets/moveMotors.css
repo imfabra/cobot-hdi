@@ -1,0 +1,10 @@
+
+
+
+.contenedor-move-motor{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 30px;
+  align-items: center;
+}

@@ -3,40 +3,74 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  background-color: rgb(65, 65, 65);
-  /* background: linear-gradient(rgb(31, 31, 31), rgb(65, 65, 65), rgb(31, 31, 31)); */
   border-radius: 16px;
   margin-right: 2px;
-  height: 650px;
   width: 70px;
-  padding-top: 150px;
-  padding-bottom: 150px;
+  height: 650px;
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+.card-cli-dark{
+  background-color: rgb(65, 65, 65);
+  
+}
+.card-cli-light{
+  background-color: rgb(255, 255, 255);
 }
 button {
-  background-color: black;
-  color: white;
+  user-select: none;
   padding: 6px 10px;
   border-radius: 8px;
   border: none;
   font-weight: 600;
 }
-button:hover {
+
+.btn-dark{
+  color: white;
+  background-color: black;
+}
+.btn-light{
+  color: rgb(255, 255, 255);
+  background-color: rgb(34, 52, 126);
+
+}
+
+
+
+.btn-dark:hover {
   background-color: rgba(0, 0, 0, 0.732);
   cursor: pointer;
 }
+.btn-light:hover {
+  background-color: rgba(0, 0, 0, 0.786);
+  cursor: pointer;
+}
+
+
 .seteo {
   width: 95%;
-  background-color: tomato !important;
 }
+.seteo-dark {
+  cursor: pointer;
+  background-color: rgb(250, 154, 23) !important;
+  color: black;
+}
+.seteo-light {
+  cursor: pointer;
+  color: black;
+  background-color: tomato;
+}
+
 .accion-rapida {
   display: flex;
   flex-direction: column;
   gap: 10px;
   justify-content: center;
   align-items: center;
+  width: 90%;
 }
-.contenedor-seteo{
-  width: 100%;
+.contenedor-seteo {
+  width: 90%;
   display: flex;
   justify-content: center;
 }
@@ -54,3 +88,33 @@ button:hover {
   align-items: center;
 }
 
+@media (max-width: 1380px) {
+  .card-cli {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+    align-items: center;
+    height: 50px;
+    width: 90%;
+    padding: 0;
+  }
+  .contenedor-seteo {
+    width: 50%;
+  }
+  .seteo {
+    width: 40px;
+    padding: 6px 10px;
+  }
+  .accion-rapida {
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    width: 50%;
+    padding-left: 10%;
+  }
+}
+@media (max-width: 500px) {
+  .contenedor-seteo {
+    width: 30%;
+  }
+}

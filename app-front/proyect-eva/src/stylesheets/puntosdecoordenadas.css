@@ -7,9 +7,47 @@
   align-items: center;
   justify-content: flex-start;
   margin: 2px;
-  box-shadow: 3px 3px 13px #00000028;
   border-radius: 20px;
+  font-weight: 600;
+  box-shadow: 3px 3px 13px #00000028;
+}
+.container-card-dark {
+  color: white;
+  background-color: rgb(65, 65, 65);
+}
+.container-card-light {
   background-color: white;
+  color: black;
+}
+
+
+.imagen-izquierda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+.imagen-arm {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+.imagen-arm img {
+  width: 100%;
+  height: auto;
+}
+
+.contenido1 {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+}
+.container-small{
+  height: 40px;
+  width: 1px;
+  font-size: 0.7rem;
+
 }
 small {
   color: tomato;
@@ -22,31 +60,56 @@ small {
 .ancho {
   width: 100%;
 }
-.lista-li {
-  cursor: move;
-  user-select: none;
-}
+
+
+
 .card-full {
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
-  max-width: 95%;
-  min-height: 100vh;
+  width: 90% !important;
+  min-height: 2px !important;
 }
 .titulo-card {
   width: 100%;
+  margin-bottom: 5px;
   text-align: center;
-  color: rgb(0, 0, 0);
   text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.6);
+}
+.titulo-card-dark{
+  color: white;
+}
+.titulo-card-light{
+  color: #000;
+}
+.contenedor-imagen-form {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.contenido-derecha-form {
+  width: 50%;
+  display: flex;
+}
+.contenido-derecha-form img {
+  display: none;
 }
 .container-form {
   display: flex;
   gap: 0.13rem;
   flex-direction: column;
-  background-color: rgb(255, 255, 255);
-  min-width: 80%;
+  align-items: flex-start;
   font-size: 1rem;
-  align-items: center;
+}
+.container-form-dark{
+  color: #fff;
+  background-color: rgb(65, 65, 65);
+} 
+.container-form-light{
+color: black !important;
+}
+.container-form-light{
+  background-color: white;
 }
 
 .container-input {
@@ -56,18 +119,35 @@ small {
   justify-content: center;
   font-size: 1rem;
 }
+.mover-derecha{
+  width: 119.75px;
+}
 .input-coordenada {
   margin: 0 10px;
+  padding: 0.2rem;
   font-size: 1rem;
   width: 3.7rem;
   border-radius: 8px;
   border: none;
-  box-shadow: 1px 1px 3px #00000028;
-  background-color: #f6f7f5e3;
-  padding: 4px;
+  box-shadow: 1px 1px 3px #00000067;
 }
+.contenedor-card-pp{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-around;
+}
+.input-coordenada-dark{
+  background-color: #000000;
+  color: white;
+}
+.input-coordenada-light{
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+}
+
 input.escribirname.input-coordenada {
-  width: 7.5rem;
+  width: 8rem;
 }
 .nombrar-lista {
   display: flex;
@@ -77,6 +157,7 @@ input.escribirname.input-coordenada {
   padding: 0 0 10px 25px;
 }
 .nombrar {
+  padding-top: 3px;
   width: 100%;
   height: 32px;
   display: flex;
@@ -86,16 +167,20 @@ input.escribirname.input-coordenada {
 .topmain {
   display: flex;
 }
-.contenedor-refesh {
-  /* background-color: red; */
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-.contenedor-refesh:hover {
-  background-color: #fd7e7e;
+
+.contenedor-refesh-dark:hover {
+  background-color: rgb(200, 0, 0);
   border-radius: 5px;
   box-shadow: 0 0 5px red;
   cursor: pointer;
+  font-weight: bold;
+}
+.contenedor-refesh-light:hover {
+  background-color: #fd7e7e;
+  box-shadow: 0 0 5px red;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
 }
 .img-none {
   padding: 35px;
@@ -112,9 +197,6 @@ input.escribirname.input-coordenada {
   width: 100%;
   justify-content: space-around;
   align-items: center;
-}
-.contenido1 {
-  width: 55%;
 }
 .contenido2 {
   width: 45%;
@@ -160,9 +242,33 @@ input.escribirname.input-coordenada {
   font-weight: 400;
   border-radius: 15px;
   margin-top: 10px;
+  cursor: move;
+  user-select: none;
   box-shadow: 0 1px 1px #0000006b;
-  background-color: rgb(199, 199, 199);
+  /* Cambiar el color de los select*** */
 }
+.lista-li-dark{
+  background-color: rgb(0, 0, 0);
+  box-shadow: 0 1px 5px rgba(128, 128, 128, 0.777) !important;
+  color: #fff;
+}
+.lista-li-light{
+  background-color: rgb(199, 199, 199);
+  box-shadow: 0 1px 1px #0000006b;
+  color: #000;
+}
+
+.lista-li-dark:hover{
+  background-color: #00000071 !important;
+
+}
+
+.lista-li:hover {
+  background-color: #0000001e;
+}
+/* Estilo para las opciones cuando el cursor se encuentra sobre ellas */
+
+
 .li-grandes {
   display: flex;
   justify-content: center;
@@ -194,6 +300,7 @@ input.escribirname.input-coordenada {
     )
     1;
   padding-top: 6px;
+  margin-bottom: 8px;
 }
 .opcion-seleccionada {
   padding: 3px;
@@ -201,6 +308,17 @@ input.escribirname.input-coordenada {
 
 .select {
   padding: 5px;
+  background: #000;
+  color: white;
+}
+.select-dark{
+  background: #000;
+  color: white;
+  
+}
+.select-light{
+  background-color: #fff;
+  color: #000;
 }
 
 /* pld es el vid que contiene los botones de p: play.  l: lista y el boton d: delete */
@@ -223,7 +341,8 @@ input.escribirname.input-coordenada {
   padding-left: 10px;
   display: flex;
   flex-wrap: wrap;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 500;
   align-items: center;
   height: 100%;
   width: 90%;
@@ -243,56 +362,111 @@ input.escribirname.input-coordenada {
 }
 
 /* Aqui estamos dandole estilos a el boton de play y de delete de los puntos guardados */
-.delete-punto {
-  background-color: rgb(253, 65, 65);
-  transition: 0.3s ease;
+.delete-punto-dark {
+  color: black;
+  background-color: rgb(238, 67, 49);
   border-radius: 50%;
   cursor: pointer;
   width: 1.1rem;
   height: 1.1rem;
 }
-.delete-punto:hover {
-  background-color: red;
-  box-shadow: 0 0 6px red;
+.delete-punto-dark:hover {
+  background-color: rgb(231, 26, 26);
+  box-shadow: 0 0 6px rgb(187, 8, 8);
 }
-.delete-punto:active {
+.delete-punto-dark:active {
   background-color: rgb(255, 28, 28);
   box-shadow: 0 0 8px 1px red;
 }
 
-.play-punto {
+
+.play-punto-dark {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
   width: 1.1rem;
   height: 1.1rem;
-  background-color: rgba(28, 240, 28, 0.7);
-  transition: 0.3s ease;
+  background-color: rgb(76,175,80);
   border-radius: 50%;
   cursor: pointer;
 }
-.play-punto:hover {
-  background-color: rgb(47, 227, 47);
+.play-punto-dark:hover {
+  background-color: rgba(76, 175, 79, 0.798);
   box-shadow: 0 0 6px rgb(44, 197, 44);
 }
-.play-punto:active {
+.play-punto-dark:active {
   background-color: rgba(0, 255, 0, 0.7);
   box-shadow: 0 0 8px 1px rgb(0, 210, 0);
 }
 
 /* Estilo de la papelera */
-.delete-all-lista {
+.delete-all-listadark {
   position: relative;
   bottom: -2px;
   left: 10%;
   font-size: 1.4rem;
   cursor: pointer;
 }
-.delete-all-lista:hover {
+.delete-all-lista-dark:hover {
+  box-shadow: 0 0 5px rgb(94, 0, 0);
+  border-radius: 5px;
+  transition: 0.3s ease;
+  padding: 3px;
+}
+.delete-all-lista-dark:active {
+  background-color: rgb(150, 0, 0);
+  box-shadow: 0 0 8px 2px red;
+  border-radius: 5px;
+}
+.delete-punto-light {
+  background-color: rgb(253, 65, 65);
+  border-radius: 50%;
+  cursor: pointer;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.delete-punto-light:hover {
+  background-color: red;
+  box-shadow: 0 0 6px red;
+}
+.delete-punto-light:active {
+  background-color: rgb(255, 28, 28);
+  box-shadow: 0 0 8px 1px red;
+}
+
+.play-punto-light {
+  width: 1.1rem;
+  height: 1.1rem;
+  background-color: rgba(28, 240, 28, 0.7);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.play-punto-light:hover {
+  background-color: rgb(47, 227, 47);
+  box-shadow: 0 0 6px rgb(44, 197, 44);
+}
+.play-punto-light:active {
+  background-color: rgba(0, 255, 0, 0.7);
+  box-shadow: 0 0 8px 1px rgb(0, 210, 0);
+}
+
+/* Estilo de la papelera */
+.delete-all-lista-light {
+  position: relative;
+  bottom: -2px;
+  left: 10%;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.delete-all-lista-light:hover {
   background-color: rgba(45, 255, 34, 0.79);
   box-shadow: 0 0 5px rgb(255, 105, 105);
   border-radius: 5px;
   transition: 0.3s ease;
   padding: 3px;
 }
-.delete-all-lista:active {
+.delete-all-lista-light:active {
   background-color: rgb(253, 65, 65);
   box-shadow: 0 0 5px 2px red;
   border-radius: 5px;
@@ -309,6 +483,7 @@ input.escribirname.input-coordenada {
 .motor-control {
   display: flex;
   align-items: center;
+  width: 165px;
 }
 
 .switch {
@@ -351,6 +526,7 @@ input.escribirname.input-coordenada {
   border-radius: 50%;
 }
 
+/* estados y colores del motores on y off */
 input:checked + .slider {
   background-color: #4caf50;
 }
@@ -361,5 +537,22 @@ input:checked + .slider:before {
 
 .status {
   font-size: 1rem;
-  color: #333;
+}
+status-dark{
+  color: #ffffff;
+  
+}
+status-ligth{
+color: black;
+}
+
+@media (max-width: 1380px) {
+  .primer-contenedor {
+    width: 90%;
+    height: 80%;
+  }
+}
+
+@media (max-width: 1380px) {
+
 }

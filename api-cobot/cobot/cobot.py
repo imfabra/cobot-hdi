@@ -7,6 +7,7 @@ class Cobot:
     def __init__(self):
         # self.thread = None
         # self.sensor_trama=[False, False, False, False, False, False]
+        #self.thread = threading.Thread(target=self.motors.read_to_arduino)
         self.motors=RMDX()
         pass
 
@@ -29,7 +30,7 @@ class Cobot:
             elif type == "read_arduino":
                 self.thread = threading.Thread(target=self.motors.read_to_arduino)
                 self.thread.start()
-
+                
     # def read_to_arduino(self):
     #     try:
     #         self.ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=None)

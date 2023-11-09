@@ -18,7 +18,7 @@ import serial
 import threading
 from tqdm import tqdm
 import ctypes
-
+from cobot import tasks as ot 
 
 
 
@@ -50,6 +50,10 @@ class RMDX:
         self.thread = None
         self.sensor_trama = [False, False, False, False, False, False]
         self.run_read_arduino = True
+        self.status_stop=0
+        self.thread = threading.Thread(target=self.read_to_arduino)
+        self.thread.start()
+        self.state=0
 
         self.bus = None
         self.header = 'codeTypeActionHex'
@@ -362,12 +366,19 @@ class RMDX:
                 if len(aux) != 0:
                     sensor_tramax = aux
                 self.sensor_trama = sensor_tramax
-                #if self.sensor_trama[5] == True:
+                # if(self.sensor_trama[4]):
+                #      #print("STRAT/STOP")
+                #     if (self.state==0):
+                #         ot.others_tasks.delay()
+                #         self.state=1
+                
+                # elif(not(self.sensor_trama[4])):
+                #     self.state=0 
                 #   break
                 #print(self.sensor_trama)
-                sleep(0.001)
-        except:
-            print("Stop arduino")
+                #sleep(0.001)
+        except Exception as e:
+            print("Stop arduino", e)
 
     def going_to_zero(self):
         self.run_read_arduino = True
@@ -383,8 +394,7 @@ class RMDX:
 
         # Inicia un hilo para ejecutar el metodo de lectura de pines arduino
         print("going zero")
-        self.thread = threading.Thread(target=self.read_to_arduino)
-        self.thread.start()
+        
         for i in tqdm(range(3), desc="1. Estabilizandolectura Arduino ", unit="Sec"):
             sleep(1)
         sensor_trama = self.sensor_trama
@@ -439,7 +449,7 @@ class RMDX:
 
         self.run_read_arduino = False
         sleep(1)
-        self.thread.join()
+        #self.thread.join()
 
 
         print("Finish set zero")
@@ -486,11 +496,4 @@ class RMDX:
         for array in sub_motion:
             self.send_motion(array,speed)
             sleep(0.1)
-
-
-    
-    
-
-
-
 

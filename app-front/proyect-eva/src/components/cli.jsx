@@ -16,18 +16,19 @@ const customStyles = {
     color: "white",
     border: "none",
     borderRadius: "8px",
-    width: "80%",
+    width: "90%",
     margin: "auto",
+    height: "100vh",
   },
 };
 
-const Cli = (props) => {
+const Cli = ({theme}) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(25);
+  const [remainingTime, setRemainingTime] = useState(60);
 
   const openModal = () => {
     setModalIsOpen(true);
-    setRemainingTime(25);
+    setRemainingTime(60);
   };
 
   const closeModal = () => {
@@ -63,8 +64,8 @@ const Cli = (props) => {
 
   const enviarHome = {
     command: "play",
-    type: "point",
-    name: "home",
+    type: "sequence",
+    name: "HOME",
   };
   const enviarP0 = {
     command: "play",
@@ -91,10 +92,16 @@ const Cli = (props) => {
         await setHome(comandoHome);
         openModal();
       } else {
-        toast.error(`set`, { position: "bottom-right" });
+        toast.error(`Set cancelado`, {
+          position: "bottom-right",
+          style: { backgroundColor: "#333", color: "#fff" },
+        });
       }
     } catch (error) {
-      toast.error(`${error}`, { position: "bottom-right" });
+      toast.error(`${error.message}`, {
+        position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
+      });
     }
   };
   const home = async () => {
@@ -102,11 +109,15 @@ const Cli = (props) => {
       const res = await playpoint(enviarHome);
       console.log(enviarHome);
       console.log(res);
-      toast.success(`Robot en movimiento - home`, {
+      toast.success(`Robot en movimiento - ${enviarHome.name}`, {
+        style: { backgroundColor: "#333", color: "#fff" },
         position: "bottom-right",
       });
     } catch (error) {
-      toast.error(`${error.response.data.name}`, { position: "bottom-right" });
+      toast.error(`${error.message}`, {
+        position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
+      });
     }
   };
   const inter = async () => {
@@ -114,10 +125,14 @@ const Cli = (props) => {
       const res = await playpoint(enviarInter);
       console.log(res);
       toast.success(`Robot en movimiento - inter`, {
+        style: { backgroundColor: "#333", color: "#fff" },
         position: "bottom-right",
       });
     } catch (error) {
-      toast.error(`${error.response.data.name}`, { position: "bottom-right" });
+      toast.error(`${error.message}`, {
+        position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
+      });
     }
   };
   const gripper = async () => {
@@ -125,10 +140,14 @@ const Cli = (props) => {
       const res = await playpoint(enviarGripper);
       console.log(res);
       toast.success(`Movimiento - Gripper`, {
+        style: { backgroundColor: "#333", color: "#fff" },
         position: "bottom-right",
       });
     } catch (error) {
-      toast.error(`${error.response.data.name}`, { position: "bottom-right" });
+      toast.error(`${error.message}`, {
+        position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
+      });
     }
   };
   const p0 = async () => {
@@ -136,24 +155,28 @@ const Cli = (props) => {
       const res = await playpoint(enviarP0);
       console.log(res);
       toast.success(`Robot en movimiento - p0`, {
+        style: { backgroundColor: "#333", color: "#fff" },
         position: "bottom-right",
       });
     } catch (error) {
-      toast.error(`${error.response.data.name}`, { position: "bottom-right" });
+      toast.error(`${error.message}`, {
+        position: "bottom-right",
+        style: { backgroundColor: "#333", color: "#fff" },
+      });
     }
   };
 
   return (
-    <div className="card-cli">
+    <div className={`card-cli ${theme==='dark'?'card-cli-dark':'card-cli-light'}`}>
       <div className="contenedor-seteo">
-      <button className="btn-seteo seteo"
-        onClick={() => {
-          set();
-        }}
-      >
-        Set
-      </button>
-
+        <button
+          className={`btn-seteo seteo ${theme==='dark'?'seteo-dark':'seteo-light'}`}
+          onClick={() => {
+            set();
+          }}
+        >
+          Set
+        </button>
       </div>
       <Modal
         isOpen={modalIsOpen}
@@ -169,10 +192,10 @@ const Cli = (props) => {
         </div>
       </Modal>
       <div className="accion-rapida">
-        <button onClick={home}>Home</button>
-        <button onClick={inter}>Inter</button>
-        <button onClick={gripper}>Gripper</button>
-        <button onClick={p0}>P0</button>
+        <button className={`${theme==='dark'?'btn-dark':'btn-light'}`} onClick={home}>Home</button>
+        <button className={`${theme==='dark'?'btn-dark':'btn-light'}`} onClick={inter}>Inter</button>
+        <button className={`${theme==='dark'?'btn-dark':'btn-light'}`} onClick={gripper}>Gripper</button>
+        <button className={`${theme==='dark'?'btn-dark':'btn-light'}`} onClick={p0}>P0</button>
       </div>
     </div>
   );
