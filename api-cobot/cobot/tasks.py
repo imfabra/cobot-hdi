@@ -22,8 +22,13 @@ class CobotTasks:
         self.expected_angles = [0.0]*5
 
     def _speed_angles(self,e_angles, vel=10):
+<<<<<<< HEAD
         timer_base = 1
         angle_base = 23
+=======
+        timer_base = 1.25
+        angle_base = 25
+>>>>>>> parent of de2db878 (Version pruebas ejecucion)
         c_angles = self.motors.get_angle_value(0)
 
         full_angles = [round(abs((a)-(d)),1) for a, d in zip(self.motors.get_angle_value(0), e_angles)]
@@ -37,16 +42,15 @@ class CobotTasks:
         
         aux_speeds = [round((v * angle / max_angle), 2) if max_angle !=0 else round((v * angle / 1), 2) for angle, v in zip(full_angles, vel)]
         
-        if min(aux_speeds) <= 5 and max_angle <= 30:
+        if min(aux_speeds) <= 10 and max_angle <= 30:
             print("Se aplica regularidad de velocidades")
-            aux_speeds[2] -= aux_speeds[2] * 0.50 
-            #aux_speeds[1] += aux_speeds[1] * 0.70
-            #aux_speeds[0] -= aux_speeds[0] * 0.50
-            aux_speeds[1] += aux_speeds[1] * 0.40 
+            aux_speeds[2] -= aux_speeds[2] * 0.30 
+            aux_speeds[1] += aux_speeds[1] * 0.50
+            #aux_speeds[1] += aux_speeds[1] * 0.50 
             #for i in range(len(aux_speeds)):
             #    if i in [0, 2, 3, 4]: 
             #        aux_speeds[i] -= aux_speeds[i] * 0.50 
-            velocidad_minima = 5
+            velocidad_minima = 10
             velocidad_minima_motores = min(aux_speeds)
             diferencia_velocidades = velocidad_minima - velocidad_minima_motores
             porcent_incremento = diferencia_velocidades / velocidad_minima
